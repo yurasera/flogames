@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kebun Klik</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  /* ============================================
+     TOKEN WARNA & FONT
+     Ubah nilai di sini untuk mengganti tampilan
+     seluruh game sekaligus.
+     ============================================ */
+  :root {
+    --bg: #EDF3E4;
+    --panel: #FAF9F2;
+    --forest: #2F5233;
+    --forest-dark: #203A24;
+    --leaf: #7CB342;
+    --sun: #F4B942;
+    --soil: #6B4423;
+    --text: #2B2B22;
+    --text-soft: #6B6B57;
+    --font-display: 'Baloo 2', sans-serif;
+    --font-body: 'Nunito', sans-serif;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    min-height: 100vh;
+    background: var(--bg);
+    font-family: var(--font-body);
+    color: var(--text);
+    display: flex;
+    justify-content: center;
+    padding: 24px 16px;
+  }
+
+  .game {
+    width: 100%;
+    max-width: 440px;
+  }
+
+  header {
+    text-align: center;
+    margin-bottom: 18px;
+  }
+
+  header h1 {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: 2rem;
+    color: var(--forest);
+    margin: 0 0 4px;
+  }
+
+  header p {
+    margin: 0;
+    color: var(--text-soft);
+    font-size: 0.95rem;
+  }
+
+  /* ============================================
+     PANEL STATISTIK (koin, koin/klik, koin/detik)
+     ============================================ */
+  .stats {
+    background: var(--panel);
+    border-radius: 18px;
+    padding: 16px 20px;
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 18px;
+    box-shadow: 0 3px 0 rgba(47,82,51,0.12);
+  }
+
+  .stat { text-align: center; flex: 1; }
+
+  .stat .label {
+    font-size: 0.75rem;
+    color: var(--text-soft);
+  }
+
+  .stat .value {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 1.25rem;
+    color: var(--forest-dark);
+  }
+
+  .stat + .stat {
+    border-left: 2px solid var(--bg);
+  }
+
+  /* ============================================
+     AREA KLIK UTAMA
+     ============================================ */
+  .click-area {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    margin: 22px 0 30px;
+  }
+
+  #tombolUtama {
+    width: 168px;
+    height: 168px;
+    border-radius: 50%;
+    border: none;
+    background: radial-gradient(circle at 35% 30%, var(--leaf), var(--forest));
+    box-shadow: 0 8px 0 var(--forest-dark);
+    font-size: 4.2rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    user-select: none;
+    transition: transform 0.06s ease;
+  }
+
+  #tombolUtama:active {
+    transform: translateY(6px);
+    box-shadow: 0 2px 0 var(--forest-dark);
+  }
+
+  .angka-melayang {
+    position: absolute;
+    top: 20px;
+    font-family: var(--font-display);
+    font-weight: 700;
+    color: var(--forest-dark);
+    pointer-events: none;
+    animation: melayang 0.9s ease-out forwards;
+  }
+
+  @keyframes melayang {
+    0%   { opacity: 1; transform: translateY(0); }
+    100% { opacity: 0; transform: translateY(-60px); }
+  }
+
+  /* ============================================
+     TOKO UPGRADE
+     ============================================ */
+  .toko h2 {
+    font-family: var(--font-display);
+    font-size: 1.1rem;
+    color: var(--forest);
+    margin: 0 0 10px 4px;
+  }
+
+  .upgrade {
+    background: var(--panel);
+    border-radius: 14px;
+    padding: 12px 14px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 10px;
+    border: 2px solid transparent;
+    cursor: pointer;
+    transition: border-color 0.15s ease, transform 0.1s ease;
+  }
+
+  .upgrade:hover:not(.terkunci) {
+    border-color: var(--leaf);
+  }
+
+  .upgrade:active:not(.terkunci) {
+    transform: scale(0.98);
+  }
+
+  .upgrade.terkunci {
+    opacity: 0.45;
+    cursor: not-allowed;
+  }
+
+  .upgrade .emoji {
+    font-size: 1.8rem;
+    width: 42px;
+    text-align: center;
+  }
+
+  .upgrade .info { flex: 1; }
+
+  .upgrade .nama {
+    font-weight: 700;
+    font-size: 0.95rem;
+  }
+
+  .upgrade .deskripsi {
+    font-size: 0.78rem;
+    color: var(--text-soft);
+  }
+
+  .upgrade .harga-jumlah {
+    text-align: right;
+    min-width: 76px;
+  }
+
+  .upgrade .harga {
+    font-weight: 700;
+    color: var(--soil);
+    font-size: 0.9rem;
+  }
+
+  .upgrade .jumlah {
+    font-size: 0.72rem;
+    color: var(--text-soft);
+  }
+
+  footer {
+    text-align: center;
+    margin-top: 20px;
+    font-size: 0.75rem;
+    color: var(--text-soft);
+  }
+</style>
+</head>
+<body>
+
+<div class="game">
+
+  <header>
+    <h1>🌱 Kebun Klik</h1>
+    <p>Klik kebun, panen koin, beli bantuan biar makin cepat!</p>
+  </header>
+
+  <div class="stats">
+    <div class="stat">
+      <div class="label">Total Koin</div>
+      <div class="value" id="statKoin">0</div>
+    </div>
+    <div class="stat">
+      <div class="label">Koin / Klik</div>
+      <div class="value" id="statKlik">1</div>
+    </div>
+    <div class="stat">
+      <div class="label">Koin / Detik</div>
+      <div class="value" id="statDetik">0</div>
+    </div>
+  </div>
+
+  <div class="click-area" id="areaKlik">
+    <button id="tombolUtama">🌾</button>
+  </div>
+
+  <div class="toko">
+    <h2>Toko Bantuan</h2>
+    <div id="daftarUpgrade"></div>
+  </div>
+
+  <footer>Dibuat untuk belajar JavaScript 🙂</footer>
+</div>
+
+<script>
+/* =====================================================================
+   KEBUN KLIK — SUMBER KODE UNTUK BELAJAR
+   ---------------------------------------------------------------------
+   Kode ini sengaja ditulis panjang dan bertahap (bukan super ringkas)
+   supaya mudah dijelaskan langkah demi langkah ke siswa.
+   ===================================================================== */
+
+// -------------------------------------------------------------------
+// 1. STATE (data) GAME
+// Semua angka penting game disimpan di satu objek supaya gampang dilacak.
+// -------------------------------------------------------------------
+let state = {
+  koin: 0,          // total koin yang dimiliki pemain
+  koinPerKlik: 1,    // koin yang didapat tiap sekali klik
+  koinPerDetik: 0,   // koin otomatis yang didapat tiap detik
+};
+
+// -------------------------------------------------------------------
+// 2. DAFTAR UPGRADE
+// Tiap upgrade adalah objek dengan info nama, harga, dan efeknya.
+// "efek" bisa "klik" (menambah koinPerKlik) atau "otomatis" (menambah koinPerDetik)
+// -------------------------------------------------------------------
+let daftarUpgrade = [
+  {
+    id: "sekop",
+    nama: "Sekop Baru",
+    emoji: "🪓",
+    deskripsi: "+1 koin tiap klik",
+    hargaDasar: 15,
+    jumlah: 0,
+    efek: "klik",
+    nilaiEfek: 1,
+  },
+  {
+    id: "adik",
+    nama: "Adik Bantu Panen",
+    emoji: "🧒",
+    deskripsi: "+1 koin per detik",
+    hargaDasar: 50,
+    jumlah: 0,
+    efek: "otomatis",
+    nilaiEfek: 1,
+  },
+  {
+    id: "siram",
+    nama: "Alat Siram Otomatis",
+    emoji: "🚿",
+    deskripsi: "+5 koin per detik",
+    hargaDasar: 200,
+    jumlah: 0,
+    efek: "otomatis",
+    nilaiEfek: 5,
+  },
+  {
+    id: "traktor",
+    nama: "Traktor Mini",
+    emoji: "🚜",
+    deskripsi: "+20 koin per detik",
+    hargaDasar: 1000,
+    jumlah: 0,
+    efek: "otomatis",
+    nilaiEfek: 20,
+  },
+  {
+    id: "rumahkaca",
+    nama: "Rumah Kaca",
+    emoji: "🏡",
+    deskripsi: "+100 koin per detik",
+    hargaDasar: 5000,
+    jumlah: 0,
+    efek: "otomatis",
+    nilaiEfek: 100,
+  },
+];
+
+// -------------------------------------------------------------------
+// 3. FUNGSI BANTUAN
+// -------------------------------------------------------------------
+
+// Menghitung harga upgrade saat ini. Setiap kali dibeli, harga naik 15%.
+function hitungHarga(upgrade) {
+  let harga = upgrade.hargaDasar * Math.pow(1.15, upgrade.jumlah);
+  return Math.round(harga);
+}
+
+// Format angka jadi lebih mudah dibaca, misal 1500 -> "1.500"
+function formatAngka(angka) {
+  return Math.floor(angka).toLocaleString("id-ID");
+}
+
+// -------------------------------------------------------------------
+// 4. FUNGSI TAMPILAN (render)
+// Fungsi-fungsi ini bertugas menampilkan data terbaru ke layar.
+// -------------------------------------------------------------------
+
+function renderStats() {
+  document.getElementById("statKoin").textContent = formatAngka(state.koin);
+  document.getElementById("statKlik").textContent = formatAngka(state.koinPerKlik);
+  document.getElementById("statDetik").textContent = formatAngka(state.koinPerDetik);
+}
+
+function renderToko() {
+  let container = document.getElementById("daftarUpgrade");
+  container.innerHTML = ""; // kosongkan dulu, lalu bangun ulang
+
+  daftarUpgrade.forEach(function (upgrade) {
+    let harga = hitungHarga(upgrade);
+    let mampuBeli = state.koin >= harga;
+
+    let elemen = document.createElement("div");
+    elemen.className = "upgrade" + (mampuBeli ? "" : " terkunci");
+
+    elemen.innerHTML =
+      '<div class="emoji">' + upgrade.emoji + '</div>' +
+      '<div class="info">' +
+        '<div class="nama">' + upgrade.nama + '</div>' +
+        '<div class="deskripsi">' + upgrade.deskripsi + '</div>' +
+      '</div>' +
+      '<div class="harga-jumlah">' +
+        '<div class="harga">' + formatAngka(harga) + ' koin</div>' +
+        '<div class="jumlah">Dimiliki: ' + upgrade.jumlah + '</div>' +
+      '</div>';
+
+    elemen.addEventListener("click", function () {
+      beliUpgrade(upgrade.id);
+    });
+
+    container.appendChild(elemen);
+  });
+}
+
+// -------------------------------------------------------------------
+// 5. AKSI PEMAIN
+// -------------------------------------------------------------------
+
+// Dipanggil setiap kali tombol utama diklik
+function klikUtama(event) {
+  state.koin += state.koinPerKlik;
+  renderStats();
+  tampilkanAngkaMelayang("+" + state.koinPerKlik);
+}
+
+// Dipanggil setiap kali kartu upgrade diklik
+function beliUpgrade(id) {
+  let upgrade = daftarUpgrade.find(function (u) { return u.id === id; });
+  let harga = hitungHarga(upgrade);
+
+  if (state.koin < harga) {
+    return; // koin belum cukup, batalkan
+  }
+
+  state.koin -= harga;
+  upgrade.jumlah += 1;
+
+  if (upgrade.efek === "klik") {
+    state.koinPerKlik += upgrade.nilaiEfek;
+  } else if (upgrade.efek === "otomatis") {
+    state.koinPerDetik += upgrade.nilaiEfek;
+  }
+
+  renderStats();
+  renderToko();
+}
+
+// Menampilkan angka "+1" yang melayang naik saat tombol diklik
+function tampilkanAngkaMelayang(teks) {
+  let area = document.getElementById("areaKlik");
+  let angka = document.createElement("div");
+  angka.className = "angka-melayang";
+  angka.textContent = teks;
+  angka.style.left = (40 + Math.random() * 20) + "%";
+  area.appendChild(angka);
+
+  // hapus elemen setelah animasinya selesai (0.9 detik)
+  setTimeout(function () {
+    angka.remove();
+  }, 900);
+}
+
+// -------------------------------------------------------------------
+// 6. LOOP OTOMATIS
+// Setiap 1 detik, tambahkan koin sesuai koinPerDetik.
+// -------------------------------------------------------------------
+setInterval(function () {
+  if (state.koinPerDetik > 0) {
+    state.koin += state.koinPerDetik;
+    renderStats();
+    renderToko(); // supaya status "terkunci" upgrade ikut update
+  }
+}, 1000);
+
+// -------------------------------------------------------------------
+// 7. PASANG EVENT & JALANKAN PERTAMA KALI
+// -------------------------------------------------------------------
+document.getElementById("tombolUtama").addEventListener("click", klikUtama);
+
+renderStats();
+renderToko();
+</script>
+
+</body>
+</html>

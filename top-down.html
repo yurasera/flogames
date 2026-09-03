@@ -1,0 +1,3393 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Treasure Quest</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+<style>
+
+  /* =========================================================
+     TOKEN WARNA
+     Ubah warna di sini untuk mengubah seluruh tampilan game.
+     ========================================================= */
+
+  :root {
+
+    --bg: #1B1035;
+
+    --panel: #2A1B54;
+
+    --panel-soft: #362268;
+
+    --accent: #FFD23F;
+
+    --correct: #4ADE80;
+
+    --wrong: #FB6F92;
+
+    --blue: #60A5FA;
+
+    --text: #F5F3FF;
+
+    --text-soft: #C9C2E8;
+
+    --font-display: 'Fredoka', sans-serif;
+
+    --font-body: 'Nunito', sans-serif;
+
+  }
+
+
+  /* =========================================================
+     RESET
+     ========================================================= */
+
+  * {
+    box-sizing: border-box;
+  }
+
+
+  body {
+
+    margin: 0;
+
+    min-height: 100vh;
+
+    background: var(--bg);
+
+    font-family: var(--font-body);
+
+    color: var(--text);
+
+    display: flex;
+
+    justify-content: center;
+
+    padding: 24px 16px;
+
+  }
+
+
+  .game {
+
+    width: 100%;
+
+    max-width: 440px;
+
+  }
+
+
+  /* =========================================================
+     SCREEN SYSTEM
+     ========================================================= */
+
+  .layar {
+
+    display: none;
+
+  }
+
+
+  .layar.aktif {
+
+    display: block;
+
+  }
+
+
+  h1,
+  h2,
+  h3 {
+
+    font-family: var(--font-display);
+
+    margin: 0;
+
+  }
+
+
+  /* =========================================================
+     START SCREEN
+     ========================================================= */
+
+  #layarMulai {
+
+    text-align: center;
+
+    padding-top: 30px;
+
+  }
+
+
+  #layarMulai .logo {
+
+    font-size: 5rem;
+
+    margin-bottom: 10px;
+
+    filter:
+      drop-shadow(0 8px 15px rgba(0,0,0,0.3));
+
+  }
+
+
+  #layarMulai h1 {
+
+    font-size: 2.2rem;
+
+    color: var(--accent);
+
+  }
+
+
+  #layarMulai p {
+
+    color: var(--text-soft);
+
+    line-height: 1.6;
+
+    margin: 8px 0 25px;
+
+  }
+
+
+  .cara-main {
+
+    background: var(--panel);
+
+    border-radius: 18px;
+
+    padding: 18px;
+
+    margin-bottom: 18px;
+
+    text-align: left;
+
+  }
+
+
+  .cara-main h3 {
+
+    color: var(--accent);
+
+    margin-bottom: 12px;
+
+  }
+
+
+  .cara-item {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 10px;
+
+    padding: 7px 0;
+
+    color: var(--text-soft);
+
+    font-size: 0.9rem;
+
+  }
+
+
+  .cara-item .icon {
+
+    width: 32px;
+
+    text-align: center;
+
+    font-size: 1.3rem;
+
+  }
+
+
+  .tombol {
+
+    width: 100%;
+
+    padding: 14px;
+
+    border-radius: 12px;
+
+    border: none;
+
+    background: var(--accent);
+
+    color: var(--bg);
+
+    font-family: var(--font-display);
+
+    font-weight: 600;
+
+    font-size: 1.05rem;
+
+    cursor: pointer;
+
+    box-shadow: 0 4px 0 #C9971F;
+
+  }
+
+
+  .tombol:active {
+
+    transform: translateY(3px);
+
+    box-shadow: 0 1px 0 #C9971F;
+
+  }
+
+
+  /* =========================================================
+     TOP BAR
+     ========================================================= */
+
+  .bar-atas {
+
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    margin-bottom: 10px;
+
+    font-size: 0.85rem;
+
+    color: var(--text-soft);
+
+  }
+
+
+  .nama-pemain {
+
+    font-family: var(--font-display);
+
+    color: var(--text);
+
+    font-size: 1rem;
+
+  }
+
+
+  .skor {
+
+    font-family: var(--font-display);
+
+    color: var(--accent);
+
+    font-size: 1.1rem;
+
+  }
+
+
+  /* =========================================================
+     GAME STATUS
+     ========================================================= */
+
+  .status-bar {
+
+    display: grid;
+
+    grid-template-columns: 1fr 1fr 1fr;
+
+    gap: 8px;
+
+    margin-bottom: 10px;
+
+  }
+
+
+  .status-box {
+
+    background: var(--panel);
+
+    border-radius: 12px;
+
+    padding: 8px;
+
+    text-align: center;
+
+  }
+
+
+  .status-label {
+
+    color: var(--text-soft);
+
+    font-size: 0.7rem;
+
+    text-transform: uppercase;
+
+    letter-spacing: 0.5px;
+
+  }
+
+
+  .status-value {
+
+    color: var(--text);
+
+    font-family: var(--font-display);
+
+    font-size: 1rem;
+
+    margin-top: 2px;
+
+  }
+
+
+  #timer {
+
+    color: var(--accent);
+
+  }
+
+
+  #lives {
+
+    color: var(--wrong);
+
+  }
+
+
+  /* =========================================================
+     GAME MAP
+     ========================================================= */
+
+  .map-wrapper {
+
+    position: relative;
+
+    width: 100%;
+
+    height: 600px;
+
+    overflow: hidden;
+
+    border-radius: 20px;
+
+    border: 2px solid var(--panel-soft);
+
+    background:
+      radial-gradient(
+        circle at 20% 20%,
+        #30245d,
+        transparent 30%
+      ),
+
+      radial-gradient(
+        circle at 80% 80%,
+        #241849,
+        transparent 35%
+      ),
+
+      #17102e;
+
+    box-shadow:
+      inset 0 0 60px rgba(0,0,0,0.25);
+
+  }
+
+
+  /* =========================================================
+     MAP GRID
+     ========================================================= */
+
+  .map-grid {
+
+    position: absolute;
+
+    inset: 0;
+
+    background-image:
+
+      linear-gradient(
+        rgba(255,255,255,0.025) 1px,
+        transparent 1px
+      ),
+
+      linear-gradient(
+        90deg,
+        rgba(255,255,255,0.025) 1px,
+        transparent 1px
+      );
+
+    background-size: 40px 40px;
+
+    pointer-events: none;
+
+  }
+
+
+  /* =========================================================
+     DECORATION
+     ========================================================= */
+
+  .decor {
+
+    position: absolute;
+
+    pointer-events: none;
+
+    user-select: none;
+
+    font-size: 1.8rem;
+
+    opacity: 0.7;
+
+  }
+
+
+  /* =========================================================
+     PLAYER
+     ========================================================= */
+
+  #player {
+
+    position: absolute;
+
+    width: 44px;
+
+    height: 44px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    font-size: 34px;
+
+    z-index: 20;
+
+    user-select: none;
+
+    transition: transform 0.05s linear;
+
+    filter:
+      drop-shadow(0 4px 5px rgba(0,0,0,0.4));
+
+  }
+
+
+  #player.shield {
+
+    border-radius: 50%;
+
+    box-shadow:
+
+      0 0 0 4px rgba(96,165,250,0.35),
+
+      0 0 25px rgba(96,165,250,0.9);
+
+  }
+
+
+  /* =========================================================
+     TREASURE / COLLECTIBLES
+     ========================================================= */
+
+  .item {
+
+    position: absolute;
+
+    width: 38px;
+
+    height: 38px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    z-index: 10;
+
+    user-select: none;
+
+    pointer-events: none;
+
+  }
+
+
+  .crystal {
+
+    font-size: 29px;
+
+    filter:
+      drop-shadow(0 0 8px #55e6ff);
+
+    animation:
+      floating 0.9s ease-in-out infinite alternate;
+
+  }
+
+
+  .coin {
+
+    font-size: 29px;
+
+    filter:
+      drop-shadow(0 0 8px #FFD23F);
+
+    animation:
+      floating 0.8s ease-in-out infinite alternate;
+
+  }
+
+
+  .star {
+
+    font-size: 32px;
+
+    filter:
+      drop-shadow(0 0 12px #FFD23F);
+
+    animation:
+      floating 0.7s ease-in-out infinite alternate;
+
+  }
+
+
+  .chest {
+
+    width: 48px;
+
+    height: 48px;
+
+    font-size: 38px;
+
+    animation:
+      chestPulse 1s infinite alternate;
+
+  }
+
+
+  @keyframes floating {
+
+    from {
+
+      transform: translateY(-3px);
+
+    }
+
+    to {
+
+      transform: translateY(4px);
+
+    }
+
+  }
+
+
+  @keyframes chestPulse {
+
+    from {
+
+      transform: scale(0.9);
+
+    }
+
+    to {
+
+      transform: scale(1.1);
+
+    }
+
+  }
+
+
+  /* =========================================================
+     ENEMY
+     ========================================================= */
+
+  .enemy {
+
+    position: absolute;
+
+    width: 42px;
+
+    height: 42px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    font-size: 32px;
+
+    z-index: 12;
+
+    user-select: none;
+
+    pointer-events: none;
+
+    filter:
+      drop-shadow(0 4px 5px rgba(0,0,0,0.4));
+
+  }
+
+
+  /* =========================================================
+     PARTICLE
+     ========================================================= */
+
+  .particle {
+
+    position: absolute;
+
+    width: 7px;
+
+    height: 7px;
+
+    border-radius: 50%;
+
+    background: var(--accent);
+
+    pointer-events: none;
+
+    z-index: 50;
+
+    animation:
+      particleAnimation 600ms ease-out forwards;
+
+  }
+
+
+  @keyframes particleAnimation {
+
+    from {
+
+      transform:
+        translate(0, 0)
+        scale(1);
+
+      opacity: 1;
+
+    }
+
+    to {
+
+      transform:
+        translate(var(--x), var(--y))
+        scale(0);
+
+      opacity: 0;
+
+    }
+
+  }
+
+
+  /* =========================================================
+     SCORE POPUP
+     ========================================================= */
+
+  .score-popup {
+
+    position: absolute;
+
+    color: var(--accent);
+
+    font-family: var(--font-display);
+
+    font-size: 1.2rem;
+
+    font-weight: 700;
+
+    pointer-events: none;
+
+    z-index: 60;
+
+    animation:
+      scorePopup 800ms ease-out forwards;
+
+  }
+
+
+  @keyframes scorePopup {
+
+    from {
+
+      transform: translateY(0);
+
+      opacity: 1;
+
+    }
+
+    to {
+
+      transform: translateY(-40px);
+
+      opacity: 0;
+
+    }
+
+  }
+
+
+  /* =========================================================
+     MESSAGE OVERLAY
+     ========================================================= */
+
+  .game-message {
+
+    position: absolute;
+
+    inset: 0;
+
+    display: flex;
+
+    justify-content: center;
+
+    align-items: center;
+
+    background:
+      rgba(15, 8, 35, 0.78);
+
+    backdrop-filter: blur(4px);
+
+    z-index: 100;
+
+  }
+
+
+  .message-card {
+
+    width: 85%;
+
+    background: var(--panel);
+
+    border: 2px solid var(--panel-soft);
+
+    border-radius: 18px;
+
+    padding: 22px;
+
+    text-align: center;
+
+  }
+
+
+  .message-icon {
+
+    font-size: 3.5rem;
+
+    margin-bottom: 8px;
+
+  }
+
+
+  .message-card h2 {
+
+    color: var(--accent);
+
+    font-size: 1.7rem;
+
+    margin-bottom: 8px;
+
+  }
+
+
+  .message-card p {
+
+    color: var(--text-soft);
+
+    line-height: 1.5;
+
+    margin-bottom: 18px;
+
+  }
+
+
+  /* =========================================================
+     CONTROLS
+     ========================================================= */
+
+  .controls {
+
+    margin-top: 10px;
+
+    display: flex;
+
+    justify-content: center;
+
+    align-items: center;
+
+    gap: 5px;
+
+    flex-wrap: wrap;
+
+    color: var(--text-soft);
+
+    font-size: 0.78rem;
+
+  }
+
+
+  .key {
+
+    display: inline-flex;
+
+    min-width: 27px;
+
+    height: 27px;
+
+    align-items: center;
+
+    justify-content: center;
+
+    border-radius: 6px;
+
+    background: var(--panel);
+
+    border: 1px solid var(--panel-soft);
+
+    color: white;
+
+    font-weight: 800;
+
+  }
+
+
+  /* =========================================================
+     RESULT SCREEN
+     ========================================================= */
+
+  #layarHasil {
+
+    text-align: center;
+
+    padding-top: 25px;
+
+  }
+
+
+  .hasil-icon {
+
+    font-size: 4rem;
+
+  }
+
+
+  #layarHasil h2 {
+
+    font-size: 1.8rem;
+
+    color: var(--accent);
+
+    margin-top: 5px;
+
+  }
+
+
+  .skor-akhir {
+
+    font-family: var(--font-display);
+
+    font-size: 3.5rem;
+
+    color: var(--text);
+
+    margin: 8px 0 2px;
+
+  }
+
+
+  .komentar {
+
+    color: var(--text-soft);
+
+    margin-bottom: 20px;
+
+  }
+
+
+  .statistik-hasil {
+
+    display: grid;
+
+    grid-template-columns: 1fr 1fr;
+
+    gap: 10px;
+
+    margin-bottom: 18px;
+
+  }
+
+
+  .hasil-box {
+
+    background: var(--panel);
+
+    border-radius: 14px;
+
+    padding: 15px;
+
+  }
+
+
+  .hasil-box .label {
+
+    color: var(--text-soft);
+
+    font-size: 0.75rem;
+
+  }
+
+
+  .hasil-box .value {
+
+    font-family: var(--font-display);
+
+    font-size: 1.5rem;
+
+    color: var(--accent);
+
+    margin-top: 4px;
+
+  }
+
+
+  /* =========================================================
+     FOOTER
+     ========================================================= */
+
+  footer {
+
+    text-align: center;
+
+    margin-top: 20px;
+
+    font-size: 0.75rem;
+
+    color: var(--text-soft);
+
+  }
+
+
+  /* =========================================================
+     MOBILE
+     ========================================================= */
+
+  @media (max-width: 600px) {
+
+    body {
+
+      padding: 16px 10px;
+
+    }
+
+
+    #layarMulai h1 {
+
+      font-size: 1.9rem;
+
+    }
+
+
+    .map-wrapper {
+
+      height: 540px;
+
+    }
+
+  }
+
+</style>
+
+</head>
+
+
+<body>
+
+
+<div class="game">
+
+
+  <!-- =======================================================
+       LAYAR MULAI
+       ======================================================= -->
+
+  <div
+    id="layarMulai"
+    class="layar aktif"
+  >
+
+    <div class="logo">
+      🗺️
+    </div>
+
+    <h1>
+      Treasure Quest
+    </h1>
+
+    <p>
+      Jelajahi dunia, kumpulkan harta,
+      dan temukan Treasure Chest!
+    </p>
+
+
+    <div class="cara-main">
+
+      <h3>
+        🎮 Cara Bermain
+      </h3>
+
+
+      <div class="cara-item">
+
+        <div class="icon">
+          🧑‍🚀
+        </div>
+
+        <div>
+          Gerakkan karakter dengan
+          Arrow Keys atau WASD.
+        </div>
+
+      </div>
+
+
+      <div class="cara-item">
+
+        <div class="icon">
+          💎
+        </div>
+
+        <div>
+          Kumpulkan crystal untuk
+          mendapatkan 10 poin.
+        </div>
+
+      </div>
+
+
+      <div class="cara-item">
+
+        <div class="icon">
+          ⭐
+        </div>
+
+        <div>
+          Ambil star untuk mendapatkan
+          50 poin.
+        </div>
+
+      </div>
+
+
+      <div class="cara-item">
+
+        <div class="icon">
+          👾
+        </div>
+
+        <div>
+          Hindari enemy!
+          Kamu punya 3 nyawa.
+        </div>
+
+      </div>
+
+
+      <div class="cara-item">
+
+        <div class="icon">
+          🏆
+        </div>
+
+        <div>
+          Temukan Treasure Chest
+          untuk memenangkan game.
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <button
+      class="tombol"
+      id="tombolMulai"
+    >
+      🚀 Mulai Petualangan
+    </button>
+
+  </div>
+
+
+
+  <!-- =======================================================
+       LAYAR GAME
+       ======================================================= -->
+
+  <div
+    id="layarGame"
+    class="layar"
+  >
+
+
+    <!-- TOP BAR -->
+
+    <div class="bar-atas">
+
+      <span
+        class="nama-pemain"
+        id="namaPemain"
+      >
+        Player
+      </span>
+
+
+      <span class="skor">
+
+        Skor:
+        <span id="skor">
+          0
+        </span>
+
+      </span>
+
+    </div>
+
+
+    <!-- STATUS -->
+
+    <div class="status-bar">
+
+
+      <div class="status-box">
+
+        <div class="status-label">
+          Time
+        </div>
+
+        <div
+          class="status-value"
+          id="timer"
+        >
+          60
+        </div>
+
+      </div>
+
+
+      <div class="status-box">
+
+        <div class="status-label">
+          Lives
+        </div>
+
+        <div
+          class="status-value"
+          id="lives"
+        >
+          ❤️❤️❤️
+        </div>
+
+      </div>
+
+
+      <div class="status-box">
+
+        <div class="status-label">
+          Level
+        </div>
+
+        <div
+          class="status-value"
+          id="level"
+        >
+          1
+        </div>
+
+      </div>
+
+
+    </div>
+
+
+
+    <!-- GAME MAP -->
+
+    <div
+      class="map-wrapper"
+      id="map"
+    >
+
+      <div class="map-grid"></div>
+
+
+      <!-- DECORATIONS -->
+
+      <div
+        class="decor"
+        style="left: 8%; top: 10%;"
+      >
+        🌲
+      </div>
+
+
+      <div
+        class="decor"
+        style="left: 78%; top: 15%;"
+      >
+        🌲
+      </div>
+
+
+      <div
+        class="decor"
+        style="left: 15%; top: 70%;"
+      >
+        🌳
+      </div>
+
+
+      <div
+        class="decor"
+        style="left: 80%; top: 72%;"
+      >
+        🌳
+      </div>
+
+
+      <div
+        class="decor"
+        style="left: 46%; top: 45%;"
+      >
+        🌿
+      </div>
+
+
+      <!-- PLAYER -->
+
+      <div
+        id="player"
+        style="
+          left: 50px;
+          top: 500px;
+        "
+      >
+        🧑‍🚀
+      </div>
+
+
+      <!-- MESSAGE -->
+
+      <div
+        class="game-message"
+        id="gameMessage"
+        style="display:none;"
+      >
+
+        <div class="message-card">
+
+          <div
+            class="message-icon"
+            id="messageIcon"
+          >
+            🏆
+          </div>
+
+
+          <h2
+            id="messageTitle"
+          >
+            You Win!
+          </h2>
+
+
+          <p
+            id="messageText"
+          >
+            Treasure berhasil ditemukan!
+          </p>
+
+
+          <button
+            class="tombol"
+            id="messageButton"
+          >
+            Lanjut
+          </button>
+
+        </div>
+
+      </div>
+
+
+    </div>
+
+
+    <!-- CONTROLS -->
+
+    <div class="controls">
+
+      <span>Move</span>
+
+      <span class="key">
+        ↑
+      </span>
+
+      <span class="key">
+        ↓
+      </span>
+
+      <span class="key">
+        ←
+      </span>
+
+      <span class="key">
+        →
+      </span>
+
+      <span>or</span>
+
+      <span class="key">
+        W
+      </span>
+
+      <span class="key">
+        A
+      </span>
+
+      <span class="key">
+        S
+      </span>
+
+      <span class="key">
+        D
+      </span>
+
+    </div>
+
+
+  </div>
+
+
+
+  <!-- =======================================================
+       LAYAR HASIL
+       ======================================================= -->
+
+  <div
+    id="layarHasil"
+    class="layar"
+  >
+
+    <div class="hasil-icon">
+      🏆
+    </div>
+
+
+    <h2>
+      Petualangan Selesai!
+    </h2>
+
+
+    <div
+      class="skor-akhir"
+      id="skorAkhir"
+    >
+      0
+    </div>
+
+
+    <p
+      class="komentar"
+      id="komentar"
+    >
+      Nice adventure!
+    </p>
+
+
+    <div class="statistik-hasil">
+
+
+      <div class="hasil-box">
+
+        <div class="label">
+          Crystal
+        </div>
+
+        <div
+          class="value"
+          id="hasilCrystal"
+        >
+          0
+        </div>
+
+      </div>
+
+
+      <div class="hasil-box">
+
+        <div class="label">
+          Star
+        </div>
+
+        <div
+          class="value"
+          id="hasilStar"
+        >
+          0
+        </div>
+
+      </div>
+
+
+      <div class="hasil-box">
+
+        <div class="label">
+          Level
+        </div>
+
+        <div
+          class="value"
+          id="hasilLevel"
+        >
+          1
+        </div>
+
+      </div>
+
+
+      <div class="hasil-box">
+
+        <div class="label">
+          Best Score
+        </div>
+
+        <div
+          class="value"
+          id="hasilBest"
+        >
+          0
+        </div>
+
+      </div>
+
+
+    </div>
+
+
+    <button
+      class="tombol"
+      id="tombolUlangi"
+    >
+      🔄 Main Lagi
+    </button>
+
+  </div>
+
+
+  <footer>
+    Dibuat untuk belajar JavaScript
+  </footer>
+
+
+</div>
+
+
+
+<script>
+
+/* =============================================================
+   TREASURE QUEST
+   -------------------------------------------------------------
+   Top-Down Game untuk belajar JavaScript.
+
+   Konsep utama:
+
+   1. Variable
+   2. Function
+   3. Object
+   4. Array
+   5. If / Else
+   6. Keyboard Event
+   7. Random
+   8. Collision Detection
+   9. Game Loop
+   10. Timer
+   11. Game State
+   ============================================================= */
+
+
+
+/* =============================================================
+   1. AMBIL ELEMENT HTML
+   ============================================================= */
+
+const map =
+  document.getElementById("map");
+
+
+const player =
+  document.getElementById("player");
+
+
+const layarMulai =
+  document.getElementById("layarMulai");
+
+
+const layarGame =
+  document.getElementById("layarGame");
+
+
+const layarHasil =
+  document.getElementById("layarHasil");
+
+
+const gameMessage =
+  document.getElementById("gameMessage");
+
+
+const messageIcon =
+  document.getElementById("messageIcon");
+
+
+const messageTitle =
+  document.getElementById("messageTitle");
+
+
+const messageText =
+  document.getElementById("messageText");
+
+
+const messageButton =
+  document.getElementById("messageButton");
+
+
+const namaPemainElement =
+  document.getElementById("namaPemain");
+
+
+const skorElement =
+  document.getElementById("skor");
+
+
+const timerElement =
+  document.getElementById("timer");
+
+
+const livesElement =
+  document.getElementById("lives");
+
+
+const levelElement =
+  document.getElementById("level");
+
+
+
+/* =============================================================
+   2. GAME STATE
+   ============================================================= */
+
+let state = {
+
+  nama: "Player",
+
+  skor: 0,
+
+  lives: 3,
+
+  level: 1,
+
+  waktu: 60,
+
+  crystal: 0,
+
+  star: 0,
+
+  sedangMain: false,
+
+  shield: false
+
+};
+
+
+
+/* =============================================================
+   3. PLAYER DATA
+   ============================================================= */
+
+let playerData = {
+
+  x: 50,
+
+  y: 500,
+
+  width: 44,
+
+  height: 44,
+
+  speed: 4
+
+};
+
+
+
+/* =============================================================
+   4. KEYBOARD STATE
+   ============================================================= */
+
+let keys = {};
+
+
+/*
+   Contoh:
+
+   keys["arrowleft"] = true
+
+   berarti tombol kiri sedang ditekan.
+*/
+
+
+document.addEventListener(
+  "keydown",
+  function(event) {
+
+    keys[event.key.toLowerCase()] = true;
+
+  }
+);
+
+
+document.addEventListener(
+  "keyup",
+  function(event) {
+
+    keys[event.key.toLowerCase()] = false;
+
+  }
+);
+
+
+
+/* =============================================================
+   5. OBJECT ARRAY
+   ============================================================= */
+
+
+/*
+   Semua object yang ada di map
+   disimpan dalam array.
+
+   Contoh:
+
+   objects = [
+      crystal,
+      crystal,
+      enemy,
+      star,
+      chest
+   ]
+*/
+
+
+let objects = [];
+
+
+
+/* =============================================================
+   6. TIMER & GAME LOOP
+   ============================================================= */
+
+let gameLoopId = null;
+
+let timerId = null;
+
+
+
+/* =============================================================
+   7. HIGH SCORE
+   ============================================================= */
+
+let bestScore =
+  Number(
+    localStorage.getItem(
+      "treasureQuestBestScore"
+    )
+  ) || 0;
+
+
+
+/* =============================================================
+   8. MULAI GAME
+   ============================================================= */
+
+function mulaiGame() {
+
+  /*
+     Reset state
+  */
+
+  state.skor = 0;
+
+  state.lives = 3;
+
+  state.level = 1;
+
+  state.waktu = 60;
+
+  state.crystal = 0;
+
+  state.star = 0;
+
+  state.sedangMain = true;
+
+  state.shield = false;
+
+
+  /*
+     Reset player
+  */
+
+  playerData.x = 50;
+
+  playerData.y =
+    map.clientHeight - 70;
+
+
+  /*
+     Bersihkan object lama
+  */
+
+  hapusSemuaObject();
+
+
+  /*
+     Update tampilan
+  */
+
+  updateUI();
+
+
+  player.style.left =
+    playerData.x + "px";
+
+
+  player.style.top =
+    playerData.y + "px";
+
+
+  player.classList.remove(
+    "shield"
+  );
+
+
+  /*
+     Tampilkan game
+  */
+
+  layarMulai.classList.remove(
+    "aktif"
+  );
+
+  layarHasil.classList.remove(
+    "aktif"
+  );
+
+  layarGame.classList.add(
+    "aktif"
+  );
+
+
+  /*
+     Sembunyikan message
+  */
+
+  gameMessage.style.display =
+    "none";
+
+
+  /*
+     Buat object game
+  */
+
+  buatMap();
+
+
+  /*
+     Mulai game loop
+  */
+
+  gameLoopId =
+    requestAnimationFrame(
+      gameLoop
+    );
+
+
+  /*
+     Mulai timer
+  */
+
+  clearInterval(timerId);
+
+  timerId =
+    setInterval(
+      updateTimer,
+      1000
+    );
+
+}
+
+
+
+/* =============================================================
+   9. MEMBUAT MAP
+   ============================================================= */
+
+function buatMap() {
+
+  /*
+     Crystal
+  */
+
+  for (
+    let i = 0;
+    i < 8;
+    i++
+  ) {
+
+    buatObject("crystal");
+
+  }
+
+
+  /*
+     Coin
+  */
+
+  for (
+    let i = 0;
+    i < 4;
+    i++
+  ) {
+
+    buatObject("coin");
+
+  }
+
+
+  /*
+     Star
+  */
+
+  for (
+    let i = 0;
+    i < 2;
+    i++
+  ) {
+
+    buatObject("star");
+
+  }
+
+
+  /*
+     Enemy
+  */
+
+  for (
+    let i = 0;
+    i < 3;
+    i++
+  ) {
+
+    buatObject("enemy");
+
+  }
+
+
+  /*
+     Treasure Chest
+
+     Chest hanya satu.
+  */
+
+  buatObject("chest");
+
+}
+
+
+
+/* =============================================================
+   10. MEMBUAT OBJECT
+   ============================================================= */
+
+function buatObject(type) {
+
+  const element =
+    document.createElement("div");
+
+
+  element.classList.add(
+    type === "enemy"
+      ? "enemy"
+      : "item"
+  );
+
+
+  /*
+     Tentukan emoji
+  */
+
+  if (type === "crystal") {
+
+    element.textContent =
+      "💎";
+
+    element.classList.add(
+      "crystal"
+    );
+
+  }
+
+
+  if (type === "coin") {
+
+    element.textContent =
+      "🪙";
+
+    element.classList.add(
+      "coin"
+    );
+
+  }
+
+
+  if (type === "star") {
+
+    element.textContent =
+      "⭐";
+
+    element.classList.add(
+      "star"
+    );
+
+  }
+
+
+  if (type === "enemy") {
+
+    element.textContent =
+      "👾";
+
+  }
+
+
+  if (type === "chest") {
+
+    element.textContent =
+      "🏆";
+
+    element.classList.add(
+      "chest"
+    );
+
+  }
+
+
+  /*
+     Random position
+  */
+
+  let x =
+    randomNumber(
+      20,
+      map.clientWidth - 60
+    );
+
+
+  let y =
+    randomNumber(
+      70,
+      map.clientHeight - 80
+    );
+
+
+  /*
+     Object tidak boleh terlalu dekat
+     dengan player.
+  */
+
+  while (
+    distance(
+      x,
+      y,
+      playerData.x,
+      playerData.y
+    ) < 100
+  ) {
+
+    x =
+      randomNumber(
+        20,
+        map.clientWidth - 60
+      );
+
+    y =
+      randomNumber(
+        70,
+        map.clientHeight - 80
+      );
+
+  }
+
+
+  element.style.left =
+    x + "px";
+
+
+  element.style.top =
+    y + "px";
+
+
+  map.appendChild(
+    element
+  );
+
+
+  /*
+     Simpan object ke array
+  */
+
+  objects.push({
+
+    type: type,
+
+    element: element,
+
+    x: x,
+
+    y: y,
+
+    width:
+      type === "chest"
+        ? 48
+        : 40,
+
+    height:
+      type === "chest"
+        ? 48
+        : 40,
+
+    /*
+       Enemy punya arah gerak.
+    */
+
+    dx:
+      type === "enemy"
+        ? randomNumber(-1, 1)
+        : 0,
+
+    dy:
+      type === "enemy"
+        ? randomNumber(-1, 1)
+        : 0
+
+  });
+
+}
+
+
+
+/* =============================================================
+   11. RANDOM NUMBER
+   ============================================================= */
+
+function randomNumber(min, max) {
+
+  return Math.floor(
+    Math.random() *
+    (max - min + 1)
+  ) + min;
+
+}
+
+
+
+/* =============================================================
+   12. DISTANCE
+   ============================================================= */
+
+function distance(
+  x1,
+  y1,
+  x2,
+  y2
+) {
+
+  const dx =
+    x1 - x2;
+
+  const dy =
+    y1 - y2;
+
+  return Math.sqrt(
+    dx * dx +
+    dy * dy
+  );
+
+}
+
+
+
+/* =============================================================
+   13. GAME LOOP
+   ============================================================= */
+
+function gameLoop() {
+
+  if (
+    !state.sedangMain
+  ) {
+
+    return;
+
+  }
+
+
+  /*
+     1. Gerakkan player
+  */
+
+  gerakkanPlayer();
+
+
+  /*
+     2. Gerakkan enemy
+  */
+
+  gerakkanEnemy();
+
+
+  /*
+     3. Cek collision
+  */
+
+  cekCollision();
+
+
+  /*
+     Jalankan frame berikutnya.
+  */
+
+  gameLoopId =
+    requestAnimationFrame(
+      gameLoop
+    );
+
+}
+
+
+
+/* =============================================================
+   14. GERAKKAN PLAYER
+   ============================================================= */
+
+function gerakkanPlayer() {
+
+  let dx = 0;
+
+  let dy = 0;
+
+
+  /*
+     Arrow Left / A
+  */
+
+  if (
+    keys["arrowleft"] ||
+    keys["a"]
+  ) {
+
+    dx -= playerData.speed;
+
+  }
+
+
+  /*
+     Arrow Right / D
+  */
+
+  if (
+    keys["arrowright"] ||
+    keys["d"]
+  ) {
+
+    dx += playerData.speed;
+
+  }
+
+
+  /*
+     Arrow Up / W
+  */
+
+  if (
+    keys["arrowup"] ||
+    keys["w"]
+  ) {
+
+    dy -= playerData.speed;
+
+  }
+
+
+  /*
+     Arrow Down / S
+  */
+
+  if (
+    keys["arrowdown"] ||
+    keys["s"]
+  ) {
+
+    dy += playerData.speed;
+
+  }
+
+
+  /*
+     Update position
+  */
+
+  playerData.x += dx;
+
+  playerData.y += dy;
+
+
+  /*
+     Batasi player
+     agar tidak keluar map.
+  */
+
+  const maxX =
+    map.clientWidth -
+    playerData.width;
+
+
+  const maxY =
+    map.clientHeight -
+    playerData.height;
+
+
+  if (
+    playerData.x < 0
+  ) {
+
+    playerData.x = 0;
+
+  }
+
+
+  if (
+    playerData.x > maxX
+  ) {
+
+    playerData.x = maxX;
+
+  }
+
+
+  if (
+    playerData.y < 0
+  ) {
+
+    playerData.y = 0;
+
+  }
+
+
+  if (
+    playerData.y > maxY
+  ) {
+
+    playerData.y = maxY;
+
+  }
+
+
+  /*
+     Tampilkan player
+  */
+
+  player.style.left =
+    playerData.x + "px";
+
+
+  player.style.top =
+    playerData.y + "px";
+
+}
+
+
+
+/* =============================================================
+   15. GERAKKAN ENEMY
+   ============================================================= */
+
+function gerakkanEnemy() {
+
+  objects.forEach(
+    function(object) {
+
+      if (
+        object.type !== "enemy"
+      ) {
+
+        return;
+
+      }
+
+
+      /*
+         Enemy bergerak.
+      */
+
+      object.x +=
+        object.dx *
+        (1 + state.level * 0.15);
+
+
+      object.y +=
+        object.dy *
+        (1 + state.level * 0.15);
+
+
+      /*
+         Jika menyentuh dinding,
+         balik arah.
+      */
+
+      if (
+        object.x <= 0 ||
+        object.x >=
+        map.clientWidth - 42
+      ) {
+
+        object.dx *= -1;
+
+      }
+
+
+      if (
+        object.y <= 0 ||
+        object.y >=
+        map.clientHeight - 42
+      ) {
+
+        object.dy *= -1;
+
+      }
+
+
+      /*
+         Update HTML
+      */
+
+      object.element.style.left =
+        object.x + "px";
+
+
+      object.element.style.top =
+        object.y + "px";
+
+    }
+  );
+
+}
+
+
+
+/* =============================================================
+   16. COLLISION DETECTION
+   ============================================================= */
+
+function cekCollision() {
+
+  objects.forEach(
+    function(object) {
+
+      if (
+        !object.element.parentElement
+      ) {
+
+        return;
+
+      }
+
+
+      const playerRect =
+        player.getBoundingClientRect();
+
+
+      const objectRect =
+        object.element.getBoundingClientRect();
+
+
+      const bertabrakan =
+
+        playerRect.left <
+        objectRect.right &&
+
+        playerRect.right >
+        objectRect.left &&
+
+        playerRect.top <
+        objectRect.bottom &&
+
+        playerRect.bottom >
+        objectRect.top;
+
+
+      if (
+        bertabrakan
+      ) {
+
+        handleCollision(
+          object
+        );
+
+      }
+
+    }
+  );
+
+}
+
+
+
+/* =============================================================
+   17. COLLISION LOGIC
+   ============================================================= */
+
+function handleCollision(object) {
+
+  /*
+     Crystal
+  */
+
+  if (
+    object.type === "crystal"
+  ) {
+
+    state.skor += 10;
+
+    state.crystal++;
+
+    collectEffect(
+      object,
+      "+10"
+    );
+
+    removeObject(object);
+
+    cekLevel();
+
+  }
+
+
+  /*
+     Coin
+  */
+
+  else if (
+    object.type === "coin"
+  ) {
+
+    state.skor += 20;
+
+    collectEffect(
+      object,
+      "+20"
+    );
+
+    removeObject(object);
+
+    cekLevel();
+
+  }
+
+
+  /*
+     Star
+  */
+
+  else if (
+    object.type === "star"
+  ) {
+
+    state.skor += 50;
+
+    state.star++;
+
+    collectEffect(
+      object,
+      "+50 STAR!"
+    );
+
+    removeObject(object);
+
+    cekLevel();
+
+  }
+
+
+  /*
+     Enemy
+  */
+
+  else if (
+    object.type === "enemy"
+  ) {
+
+    kenaEnemy();
+
+  }
+
+
+  /*
+     Treasure Chest
+  */
+
+  else if (
+    object.type === "chest"
+  ) {
+
+    menang();
+
+  }
+
+
+  updateUI();
+
+}
+
+
+
+/* =============================================================
+   18. PLAYER KENA ENEMY
+   ============================================================= */
+
+let lastEnemyHit = 0;
+
+
+function kenaEnemy() {
+
+  /*
+     Cooldown supaya player tidak
+     kehilangan 3 nyawa dalam
+     beberapa frame.
+  */
+
+  const sekarang =
+    Date.now();
+
+
+  if (
+    sekarang - lastEnemyHit < 1200
+  ) {
+
+    return;
+
+  }
+
+
+  lastEnemyHit =
+    sekarang;
+
+
+  /*
+     Shield
+  */
+
+  if (
+    state.shield
+  ) {
+
+    state.shield = false;
+
+    player.classList.remove(
+      "shield"
+    );
+
+    showPopup(
+      playerData.x,
+      playerData.y,
+      "🛡️ BLOCK!"
+    );
+
+    return;
+
+  }
+
+
+  /*
+     Kurangi nyawa.
+  */
+
+  state.lives--;
+
+
+  showPopup(
+    playerData.x,
+    playerData.y,
+    "-1 ❤️"
+  );
+
+
+  /*
+     Efek player
+  */
+
+  player.style.transform =
+    "scale(1.4)";
+
+
+  setTimeout(
+    function() {
+
+      player.style.transform =
+        "scale(1)";
+
+    },
+    180
+  );
+
+
+  /*
+     Game over
+  */
+
+  if (
+    state.lives <= 0
+  ) {
+
+    kalah(
+      "Nyawa kamu habis!"
+    );
+
+  }
+
+}
+
+
+
+/* =============================================================
+   19. LEVEL SYSTEM
+   ============================================================= */
+
+function cekLevel() {
+
+  /*
+     Setiap 100 poin
+     naik level.
+
+     0-99    = Level 1
+     100-199 = Level 2
+     200-299 = Level 3
+  */
+
+  const levelBaru =
+    Math.floor(
+      state.skor / 100
+    ) + 1;
+
+
+  if (
+    levelBaru > state.level
+  ) {
+
+    state.level =
+      levelBaru;
+
+
+    tampilkanLevelUp();
+
+  }
+
+}
+
+
+
+/* =============================================================
+   20. LEVEL UP
+   ============================================================= */
+
+function tampilkanLevelUp() {
+
+  showPopup(
+    playerData.x,
+    playerData.y - 30,
+    "LEVEL " +
+    state.level +
+    "!"
+  );
+
+
+
+  /*
+     Tambahkan enemy
+     ketika level naik.
+  */
+
+  if (
+    state.level <= 4
+  ) {
+
+    buatObject("enemy");
+
+  }
+
+}
+
+
+
+/* =============================================================
+   21. COLLECT EFFECT
+   ============================================================= */
+
+function collectEffect(
+  object,
+  text
+) {
+
+  createParticles(
+    object.x,
+    object.y
+  );
+
+
+  showPopup(
+    object.x,
+    object.y,
+    text
+  );
+
+}
+
+
+
+/* =============================================================
+   22. PARTICLES
+   ============================================================= */
+
+function createParticles(
+  x,
+  y
+) {
+
+  for (
+    let i = 0;
+    i < 8;
+    i++
+  ) {
+
+    const particle =
+      document.createElement(
+        "div"
+      );
+
+
+    particle.className =
+      "particle";
+
+
+    particle.style.left =
+      x + 18 + "px";
+
+
+    particle.style.top =
+      y + 18 + "px";
+
+
+    const angle =
+      Math.random() *
+      Math.PI *
+      2;
+
+
+    const distance =
+      25 +
+      Math.random() *
+      50;
+
+
+    particle.style.setProperty(
+      "--x",
+      Math.cos(angle) *
+      distance +
+      "px"
+    );
+
+
+    particle.style.setProperty(
+      "--y",
+      Math.sin(angle) *
+      distance +
+      "px"
+    );
+
+
+    map.appendChild(
+      particle
+    );
+
+
+    setTimeout(
+      function() {
+
+        particle.remove();
+
+      },
+      600
+    );
+
+  }
+
+}
+
+
+
+/* =============================================================
+   23. SCORE POPUP
+   ============================================================= */
+
+function showPopup(
+  x,
+  y,
+  text
+) {
+
+  const popup =
+    document.createElement(
+      "div"
+    );
+
+
+  popup.className =
+    "score-popup";
+
+
+  popup.textContent =
+    text;
+
+
+  popup.style.left =
+    x + "px";
+
+
+  popup.style.top =
+    y + "px";
+
+
+  map.appendChild(
+    popup
+  );
+
+
+  setTimeout(
+    function() {
+
+      popup.remove();
+
+    },
+    800
+  );
+
+}
+
+
+
+/* =============================================================
+   24. REMOVE OBJECT
+   ============================================================= */
+
+function removeObject(
+  object
+) {
+
+  object.element.remove();
+
+
+  objects =
+    objects.filter(
+      function(item) {
+
+        return item !== object;
+
+      }
+    );
+
+}
+
+
+
+/* =============================================================
+   25. TIMER
+   ============================================================= */
+
+function updateTimer() {
+
+  if (
+    !state.sedangMain
+  ) {
+
+    return;
+
+  }
+
+
+  state.waktu--;
+
+
+  updateUI();
+
+
+  if (
+    state.waktu <= 0
+  ) {
+
+    kalah(
+      "Waktu kamu habis!"
+    );
+
+  }
+
+}
+
+
+
+/* =============================================================
+   26. UPDATE UI
+   ============================================================= */
+
+function updateUI() {
+
+  skorElement.textContent =
+    state.skor;
+
+
+  timerElement.textContent =
+    state.waktu;
+
+
+  levelElement.textContent =
+    state.level;
+
+
+  livesElement.textContent =
+    "❤️".repeat(
+      Math.max(
+        0,
+        state.lives
+      )
+    );
+
+
+  /*
+     Timer merah jika tinggal sedikit.
+  */
+
+  if (
+    state.waktu <= 10
+  ) {
+
+    timerElement.style.color =
+      "var(--wrong)";
+
+  }
+  else {
+
+    timerElement.style.color =
+      "var(--accent)";
+
+  }
+
+}
+
+
+
+/* =============================================================
+   27. MENANG
+   ============================================================= */
+
+function menang() {
+
+  if (
+    !state.sedangMain
+  ) {
+
+    return;
+
+  }
+
+
+  state.sedangMain = false;
+
+
+  clearInterval(
+    timerId
+  );
+
+
+  cancelAnimationFrame(
+    gameLoopId
+  );
+
+
+  /*
+     Bonus kemenangan.
+  */
+
+  state.skor +=
+    state.waktu * 2;
+
+
+  updateBestScore();
+
+
+  /*
+     Tampilkan message.
+  */
+
+  gameMessage.style.display =
+    "flex";
+
+
+  messageIcon.textContent =
+    "🏆";
+
+
+  messageTitle.textContent =
+    "TREASURE FOUND!";
+
+
+  messageText.innerHTML =
+
+    "Kamu berhasil menemukan treasure!<br><br>" +
+
+    "Bonus waktu: +" +
+    state.waktu * 2 +
+    " poin";
+
+
+  messageButton.textContent =
+    "Lihat Hasil";
+
+
+  messageButton.onclick =
+    function() {
+
+      tampilkanHasil();
+
+    };
+
+
+  updateUI();
+
+}
+
+
+
+/* =============================================================
+   28. KALAH
+   ============================================================= */
+
+function kalah(
+  alasan
+) {
+
+  if (
+    !state.sedangMain
+  ) {
+
+    return;
+
+  }
+
+
+  state.sedangMain = false;
+
+
+  clearInterval(
+    timerId
+  );
+
+
+  cancelAnimationFrame(
+    gameLoopId
+  );
+
+
+  updateBestScore();
+
+
+  gameMessage.style.display =
+    "flex";
+
+
+  messageIcon.textContent =
+    "😵";
+
+
+  messageTitle.textContent =
+    "GAME OVER";
+
+
+  messageText.textContent =
+    alasan;
+
+
+  messageButton.textContent =
+    "Lihat Hasil";
+
+
+  messageButton.onclick =
+    function() {
+
+      tampilkanHasil();
+
+    };
+
+}
+
+
+
+/* =============================================================
+   29. BEST SCORE
+   ============================================================= */
+
+function updateBestScore() {
+
+  if (
+    state.skor >
+    bestScore
+  ) {
+
+    bestScore =
+      state.skor;
+
+
+    localStorage.setItem(
+      "treasureQuestBestScore",
+      bestScore
+    );
+
+  }
+
+}
+
+
+
+/* =============================================================
+   30. HASIL GAME
+   ============================================================= */
+
+function tampilkanHasil() {
+
+  gameMessage.style.display =
+    "none";
+
+
+  document.getElementById(
+    "skorAkhir"
+  ).textContent =
+    state.skor;
+
+
+  document.getElementById(
+    "hasilCrystal"
+  ).textContent =
+    state.crystal;
+
+
+  document.getElementById(
+    "hasilStar"
+  ).textContent =
+    state.star;
+
+
+  document.getElementById(
+    "hasilLevel"
+  ).textContent =
+    state.level;
+
+
+  document.getElementById(
+    "hasilBest"
+  ).textContent =
+    bestScore;
+
+
+  /*
+     Komentar berdasarkan score.
+  */
+
+  let komentar;
+
+
+  if (
+    state.skor >= 500
+  ) {
+
+    komentar =
+      "🌟 Legendary Explorer! Kamu jago banget!";
+
+  }
+
+  else if (
+    state.skor >= 300
+  ) {
+
+    komentar =
+      "🔥 Amazing! Petualanganmu keren!";
+
+  }
+
+  else if (
+    state.skor >= 150
+  ) {
+
+    komentar =
+      "💎 Good job! Tinggal sedikit lagi!";
+
+  }
+
+  else {
+
+    komentar =
+      "🚀 Coba lagi dan kumpulkan lebih banyak treasure!";
+
+  }
+
+
+  document.getElementById(
+    "komentar"
+  ).textContent =
+    komentar;
+
+
+  layarGame.classList.remove(
+    "aktif"
+  );
+
+
+  layarHasil.classList.add(
+    "aktif"
+  );
+
+}
+
+
+
+/* =============================================================
+   31. HAPUS SEMUA OBJECT
+   ============================================================= */
+
+function hapusSemuaObject() {
+
+  objects.forEach(
+    function(object) {
+
+      object.element.remove();
+
+    }
+  );
+
+
+  objects = [];
+
+}
+
+
+
+/* =============================================================
+   32. EVENT MULAI
+   ============================================================= */
+
+document
+  .getElementById("tombolMulai")
+  .addEventListener(
+    "click",
+    function() {
+
+      mulaiGame();
+
+    }
+  );
+
+
+
+/* =============================================================
+   33. EVENT MAIN LAGI
+   ============================================================= */
+
+document
+  .getElementById("tombolUlangi")
+  .addEventListener(
+    "click",
+    function() {
+
+      layarHasil.classList.remove(
+        "aktif"
+      );
+
+
+      layarMulai.classList.add(
+        "aktif"
+      );
+
+    }
+  );
+
+
+
+/* =============================================================
+   34. PLAYER NAME
+   ============================================================= */
+
+/*
+   Karena game ini untuk anak SMP,
+   nama pemain bisa dibuat otomatis.
+*/
+
+const nama =
+  prompt(
+    "Masukkan nama kamu:"
+  );
+
+
+if (
+  nama &&
+  nama.trim() !== ""
+) {
+
+  state.nama =
+    nama.trim();
+
+}
+
+
+namaPemainElement.textContent =
+  state.nama;
+
+
+
+</script>
+
+</body>
+</html>

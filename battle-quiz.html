@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Battle Kuis</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  /* ============================================
+     TOKEN WARNA & FONT
+     Ubah nilai di sini untuk mengganti tampilan
+     seluruh game sekaligus.
+     ============================================ */
+  :root {
+    --bg: #1B1035;
+    --panel: #2A1B54;
+    --panel-soft: #362268;
+    --accent: #FFD23F;
+    --correct: #4ADE80;
+    --wrong: #FB6F92;
+    --text: #F5F3FF;
+    --text-soft: #C9C2E8;
+    --font-display: 'Fredoka', sans-serif;
+    --font-body: 'Nunito', sans-serif;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    min-height: 100vh;
+    background: var(--bg);
+    font-family: var(--font-body);
+    color: var(--text);
+    display: flex;
+    justify-content: center;
+    padding: 24px 16px;
+  }
+
+  .game {
+    width: 100%;
+    max-width: 440px;
+  }
+
+  .layar { display: none; }
+  .layar.aktif { display: block; }
+
+  h1, h2 {
+    font-family: var(--font-display);
+    margin: 0;
+  }
+
+  /* ============================================
+     LAYAR MULAI
+     ============================================ */
+  #layarMulai {
+    text-align: center;
+    padding-top: 30px;
+  }
+
+  #layarMulai h1 {
+    font-size: 2.1rem;
+    color: var(--accent);
+  }
+
+  #layarMulai p {
+    color: var(--text-soft);
+    margin: 8px 0 26px;
+  }
+
+  #inputNama {
+    width: 100%;
+    padding: 14px 16px;
+    border-radius: 12px;
+    border: 2px solid var(--panel-soft);
+    background: var(--panel);
+    color: var(--text);
+    font-family: var(--font-body);
+    font-size: 1rem;
+    margin-bottom: 14px;
+  }
+
+  #inputNama:focus {
+    outline: none;
+    border-color: var(--accent);
+  }
+
+  .tombol {
+    width: 100%;
+    padding: 14px;
+    border-radius: 12px;
+    border: none;
+    background: var(--accent);
+    color: var(--bg);
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 1.05rem;
+    cursor: pointer;
+    box-shadow: 0 4px 0 #C9971F;
+  }
+
+  .tombol:active { transform: translateY(3px); box-shadow: 0 1px 0 #C9971F; }
+
+  /* ============================================
+     LAYAR SOAL
+     ============================================ */
+  .bar-atas {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+    font-size: 0.85rem;
+    color: var(--text-soft);
+  }
+
+  .bar-atas .skor {
+    font-family: var(--font-display);
+    color: var(--accent);
+    font-size: 1.1rem;
+  }
+
+  .bar-timer {
+    height: 10px;
+    background: var(--panel-soft);
+    border-radius: 6px;
+    overflow: hidden;
+    margin-bottom: 20px;
+  }
+
+  #timerIsi {
+    height: 100%;
+    width: 100%;
+    background: var(--accent);
+    border-radius: 6px;
+    transition: width 0.1s linear, background-color 0.3s ease;
+  }
+
+  .kartu-soal {
+    background: var(--panel);
+    border-radius: 18px;
+    padding: 22px 20px;
+    margin-bottom: 18px;
+  }
+
+  .kartu-soal .nomor {
+    font-size: 0.8rem;
+    color: var(--text-soft);
+    margin-bottom: 6px;
+  }
+
+  .kartu-soal .pertanyaan {
+    font-family: var(--font-display);
+    font-size: 1.2rem;
+    line-height: 1.4;
+  }
+
+  .pilihan-list {
+    display: grid;
+    gap: 12px;
+  }
+
+  .pilihan {
+    background: var(--panel);
+    border: 2px solid var(--panel-soft);
+    border-radius: 14px;
+    padding: 14px 16px;
+    text-align: left;
+    font-family: var(--font-body);
+    font-weight: 700;
+    font-size: 0.95rem;
+    color: var(--text);
+    cursor: pointer;
+    transition: border-color 0.15s ease, transform 0.1s ease;
+  }
+
+  .pilihan:hover { border-color: var(--accent); }
+  .pilihan:active { transform: scale(0.98); }
+
+  .pilihan.benar {
+    border-color: var(--correct);
+    background: rgba(74, 222, 128, 0.18);
+  }
+
+  .pilihan.salah {
+    border-color: var(--wrong);
+    background: rgba(251, 111, 146, 0.18);
+  }
+
+  .pilihan[disabled] { cursor: default; }
+
+  .streak-info {
+    text-align: center;
+    margin-top: 14px;
+    font-size: 0.85rem;
+    color: var(--accent);
+    min-height: 20px;
+  }
+
+  /* ============================================
+     LAYAR HASIL
+     ============================================ */
+  #layarHasil { text-align: center; padding-top: 10px; }
+
+  #layarHasil h2 {
+    font-size: 1.5rem;
+    color: var(--accent);
+  }
+
+  .skor-akhir {
+    font-family: var(--font-display);
+    font-size: 3rem;
+    color: var(--text);
+    margin: 10px 0 4px;
+  }
+
+  .papan-skor {
+    background: var(--panel);
+    border-radius: 16px;
+    padding: 16px 18px;
+    margin: 22px 0;
+    text-align: left;
+  }
+
+  .papan-skor h3 {
+    font-family: var(--font-display);
+    font-size: 1rem;
+    color: var(--text-soft);
+    margin: 0 0 10px;
+  }
+
+  .baris-skor {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 0;
+    border-bottom: 1px solid var(--panel-soft);
+    font-size: 0.9rem;
+  }
+
+  .baris-skor:last-child { border-bottom: none; }
+
+  .baris-skor.milikku { color: var(--accent); font-weight: 700; }
+
+  footer {
+    text-align: center;
+    margin-top: 20px;
+    font-size: 0.75rem;
+    color: var(--text-soft);
+  }
+</style>
+</head>
+<body>
+
+<div class="game">
+
+  <!-- ================= LAYAR MULAI ================= -->
+  <div id="layarMulai" class="layar aktif">
+    <h1>⚡ Battle Kuis</h1>
+    <p>Jawab cepat, jawab benar, kejar skor tertinggi!</p>
+    <input type="text" id="inputNama" placeholder="Tulis nama kamu di sini...">
+    <button class="tombol" id="tombolMulai">Mulai Kuis</button>
+  </div>
+
+  <!-- ================= LAYAR SOAL ================= -->
+  <div id="layarSoal" class="layar">
+    <div class="bar-atas">
+      <span id="labelPemain"></span>
+      <span class="skor">Skor: <span id="skorJalan">0</span></span>
+    </div>
+
+    <div class="bar-timer">
+      <div id="timerIsi"></div>
+    </div>
+
+    <div class="kartu-soal">
+      <div class="nomor" id="nomorSoal">Soal 1 dari 10</div>
+      <div class="pertanyaan" id="teksPertanyaan">...</div>
+    </div>
+
+    <div class="pilihan-list" id="daftarPilihan"></div>
+
+    <div class="streak-info" id="infoStreak"></div>
+  </div>
+
+  <!-- ================= LAYAR HASIL ================= -->
+  <div id="layarHasil" class="layar">
+    <h2>Kuis Selesai!</h2>
+    <div class="skor-akhir" id="skorAkhir">0</div>
+    <p id="komentarHasil" style="color: var(--text-soft);"></p>
+
+    <div class="papan-skor">
+      <h3>🏆 Papan Skor</h3>
+      <div id="daftarLeaderboard"></div>
+    </div>
+
+    <button class="tombol" id="tombolUlangi">Main Lagi</button>
+  </div>
+
+  <footer>Dibuat untuk belajar JavaScript 🙂</footer>
+</div>
+
+<script>
+/* =====================================================================
+   BATTLE KUIS — SUMBER KODE UNTUK BELAJAR
+   ---------------------------------------------------------------------
+   Kode ini sengaja ditulis panjang dan bertahap (bukan super ringkas)
+   supaya mudah dijelaskan langkah demi langkah ke siswa.
+   ===================================================================== */
+
+// -------------------------------------------------------------------
+// 1. DATA SOAL
+// Tiap soal punya: pertanyaan, daftar pilihan, dan index jawaban benar.
+// Guru/siswa bisa menambah atau mengganti soal di sini.
+// -------------------------------------------------------------------
+let bankSoal = [
+  { pertanyaan: "Ibu kota Indonesia adalah...", pilihan: ["Bandung", "Jakarta", "Surabaya", "Medan"], benar: 1 },
+  { pertanyaan: "Hasil dari 12 x 8 adalah...", pilihan: ["96", "86", "106", "88"], benar: 0 },
+  { pertanyaan: "Planet terdekat dengan Matahari adalah...", pilihan: ["Venus", "Bumi", "Merkurius", "Mars"], benar: 2 },
+  { pertanyaan: "Penulis novel 'Laskar Pelangi' adalah...", pilihan: ["Andrea Hirata", "Tere Liye", "Pramoedya A.T.", "Dee Lestari"], benar: 0 },
+  { pertanyaan: "Rumus kimia air adalah...", pilihan: ["CO2", "O2", "H2O", "NaCl"], benar: 2 },
+  { pertanyaan: "Proklamasi kemerdekaan Indonesia dibacakan tanggal...", pilihan: ["17 Agustus 1945", "20 Mei 1908", "28 Oktober 1928", "10 November 1945"], benar: 0 },
+  { pertanyaan: "Hasil dari 15 - 7 + 3 adalah...", pilihan: ["9", "11", "5", "13"], benar: 1 },
+  { pertanyaan: "Organ tubuh yang memompa darah adalah...", pilihan: ["Paru-paru", "Hati", "Jantung", "Ginjal"], benar: 2 },
+  { pertanyaan: "Bahasa pemrograman yang dipakai untuk membuat game ini adalah...", pilihan: ["Python", "JavaScript", "PHP", "Swift"], benar: 1 },
+  { pertanyaan: "Benua terbesar di dunia adalah...", pilihan: ["Afrika", "Amerika", "Asia", "Eropa"], benar: 2 },
+];
+
+// -------------------------------------------------------------------
+// 2. STATE (data yang berubah selama game berjalan)
+// -------------------------------------------------------------------
+let state = {
+  namaPemain: "",
+  soalKe: 0,        // index soal yang sedang berjalan
+  skor: 0,
+  streak: 0,         // jumlah jawaban benar berturut-turut
+  waktuTersisa: 10,  // detik tersisa untuk soal saat ini
+  timerId: null,     // menyimpan id setInterval supaya bisa dihentikan
+  sudahJawab: false, // mencegah klik dobel di soal yang sama
+};
+
+// Papan skor sementara (tersimpan selama tab ini terbuka)
+let papanSkor = [];
+
+const WAKTU_PER_SOAL = 10; // detik
+
+// -------------------------------------------------------------------
+// 3. FUNGSI BANTUAN
+// -------------------------------------------------------------------
+
+// Mengacak urutan array (dipakai supaya urutan soal beda tiap main)
+function acakArray(array) {
+  let hasil = array.slice(); // salin dulu, jangan ubah array asli
+  for (let i = hasil.length - 1; i > 0; i--) {
+    let j = Math.floor(Math.random() * (i + 1));
+    let temp = hasil[i];
+    hasil[i] = hasil[j];
+    hasil[j] = temp;
+  }
+  return hasil;
+}
+
+function tampilkanLayar(idLayar) {
+  document.querySelectorAll(".layar").forEach(function (el) {
+    el.classList.remove("aktif");
+  });
+  document.getElementById(idLayar).classList.add("aktif");
+}
+
+// -------------------------------------------------------------------
+// 4. MEMULAI GAME
+// -------------------------------------------------------------------
+function mulaiGame() {
+  let nama = document.getElementById("inputNama").value.trim();
+  state.namaPemain = nama === "" ? "Pemain" : nama;
+
+  state.soalKe = 0;
+  state.skor = 0;
+  state.streak = 0;
+
+  soalTerpakai = acakArray(bankSoal); // urutan soal diacak tiap sesi baru
+
+  document.getElementById("labelPemain").textContent = state.namaPemain;
+  tampilkanLayar("layarSoal");
+  tampilkanSoal();
+}
+
+let soalTerpakai = bankSoal; // akan diacak ulang tiap mulaiGame()
+
+// -------------------------------------------------------------------
+// 5. MENAMPILKAN SOAL
+// -------------------------------------------------------------------
+function tampilkanSoal() {
+  state.sudahJawab = false;
+  let soal = soalTerpakai[state.soalKe];
+
+  document.getElementById("nomorSoal").textContent =
+    "Soal " + (state.soalKe + 1) + " dari " + soalTerpakai.length;
+  document.getElementById("teksPertanyaan").textContent = soal.pertanyaan;
+  document.getElementById("skorJalan").textContent = state.skor;
+  document.getElementById("infoStreak").textContent =
+    state.streak >= 2 ? "🔥 Streak " + state.streak + " jawaban benar!" : "";
+
+  // Bangun tombol pilihan jawaban
+  let container = document.getElementById("daftarPilihan");
+  container.innerHTML = "";
+
+  soal.pilihan.forEach(function (teksPilihan, index) {
+    let tombol = document.createElement("button");
+    tombol.className = "pilihan";
+    tombol.textContent = teksPilihan;
+    tombol.addEventListener("click", function () {
+      jawabSoal(index);
+    });
+    container.appendChild(tombol);
+  });
+
+  mulaiTimer();
+}
+
+// -------------------------------------------------------------------
+// 6. TIMER SOAL
+// -------------------------------------------------------------------
+function mulaiTimer() {
+  state.waktuTersisa = WAKTU_PER_SOAL;
+  perbaruiTampilanTimer();
+
+  clearInterval(state.timerId); // hentikan timer soal sebelumnya kalau ada
+  state.timerId = setInterval(function () {
+    state.waktuTersisa -= 0.1;
+
+    if (state.waktuTersisa <= 0) {
+      state.waktuTersisa = 0;
+      perbaruiTampilanTimer();
+      clearInterval(state.timerId);
+      if (!state.sudahJawab) {
+        jawabSoal(-1); // -1 berarti waktu habis, dianggap salah
+      }
+      return;
+    }
+
+    perbaruiTampilanTimer();
+  }, 100);
+}
+
+function perbaruiTampilanTimer() {
+  let persen = (state.waktuTersisa / WAKTU_PER_SOAL) * 100;
+  let bar = document.getElementById("timerIsi");
+  bar.style.width = persen + "%";
+  bar.style.backgroundColor = persen < 30 ? "var(--wrong)" : "var(--accent)";
+}
+
+// -------------------------------------------------------------------
+// 7. MENJAWAB SOAL & MENGHITUNG SKOR
+// -------------------------------------------------------------------
+function jawabSoal(indexDipilih) {
+  if (state.sudahJawab) return; // cegah klik dobel
+  state.sudahJawab = true;
+  clearInterval(state.timerId);
+
+  let soal = soalTerpakai[state.soalKe];
+  let benar = indexDipilih === soal.benar;
+  let semuaPilihan = document.querySelectorAll(".pilihan");
+
+  // Tandai jawaban benar & salah secara visual
+  semuaPilihan.forEach(function (tombol, index) {
+    tombol.disabled = true;
+    if (index === soal.benar) tombol.classList.add("benar");
+    if (index === indexDipilih && !benar) tombol.classList.add("salah");
+  });
+
+  if (benar) {
+    state.streak += 1;
+
+    let poinDasar = 100;
+    let bonusKecepatan = Math.round((state.waktuTersisa / WAKTU_PER_SOAL) * 50);
+    let bonusStreak = state.streak >= 3 ? 50 : 0;
+
+    state.skor += poinDasar + bonusKecepatan + bonusStreak;
+  } else {
+    state.streak = 0;
+  }
+
+  document.getElementById("skorJalan").textContent = state.skor;
+  document.getElementById("infoStreak").textContent =
+    state.streak >= 2 ? "🔥 Streak " + state.streak + " jawaban benar!" : "";
+
+  // Beri jeda sejenak supaya siswa sempat lihat feedback, lalu lanjut
+  setTimeout(soalBerikutnya, 1200);
+}
+
+function soalBerikutnya() {
+  state.soalKe += 1;
+
+  if (state.soalKe < soalTerpakai.length) {
+    tampilkanSoal();
+  } else {
+    selesaikanGame();
+  }
+}
+
+// -------------------------------------------------------------------
+// 8. AKHIR GAME & PAPAN SKOR
+// -------------------------------------------------------------------
+function selesaikanGame() {
+  papanSkor.push({ nama: state.namaPemain, skor: state.skor });
+  papanSkor.sort(function (a, b) { return b.skor - a.skor; });
+  papanSkor = papanSkor.slice(0, 5); // simpan 5 skor terbaik saja
+
+  document.getElementById("skorAkhir").textContent = state.skor;
+  document.getElementById("komentarHasil").textContent = buatKomentar(state.skor);
+
+  renderLeaderboard();
+  tampilkanLayar("layarHasil");
+}
+
+function buatKomentar(skor) {
+  if (skor >= 900) return "Luar biasa! Kamu jagonya! 🌟";
+  if (skor >= 600) return "Bagus banget, terus asah lagi! 💪";
+  if (skor >= 300) return "Lumayan, coba lagi biar makin jago!";
+  return "Ayo coba lagi, pasti bisa lebih baik!";
+}
+
+function renderLeaderboard() {
+  let container = document.getElementById("daftarLeaderboard");
+  container.innerHTML = "";
+
+  papanSkor.forEach(function (entri, index) {
+    let baris = document.createElement("div");
+    let iniAku = entri.nama === state.namaPemain && entri.skor === state.skor;
+    baris.className = "baris-skor" + (iniAku ? " milikku" : "");
+    baris.innerHTML =
+      "<span>" + (index + 1) + ". " + entri.nama + "</span>" +
+      "<span>" + entri.skor + "</span>";
+    container.appendChild(baris);
+  });
+}
+
+// -------------------------------------------------------------------
+// 9. PASANG EVENT
+// -------------------------------------------------------------------
+document.getElementById("tombolMulai").addEventListener("click", mulaiGame);
+document.getElementById("tombolUlangi").addEventListener("click", function () {
+  tampilkanLayar("layarMulai");
+});
+
+// Boleh juga mulai dengan menekan Enter di kolom nama
+document.getElementById("inputNama").addEventListener("keydown", function (e) {
+  if (e.key === "Enter") mulaiGame();
+});
+</script>
+
+</body>
+</html>

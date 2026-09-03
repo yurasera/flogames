@@ -1,0 +1,1749 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Space Collector</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            min-height: 100vh;
+            background:
+                radial-gradient(circle at 20% 20%, #243b80 0%, transparent 30%),
+                radial-gradient(circle at 80% 80%, #501b72 0%, transparent 30%),
+                #080b1c;
+
+            color: white;
+
+            display: flex;
+            justify-content: center;
+            align-items: center;
+
+            padding: 20px;
+        }
+
+        .game-wrapper {
+            width: 100%;
+            max-width: 900px;
+        }
+
+        /* =========================
+           HEADER
+        ========================= */
+
+        .header {
+            text-align: center;
+            margin-bottom: 15px;
+        }
+
+        .title {
+            font-size: 38px;
+            font-weight: 900;
+            letter-spacing: 2px;
+
+            background: linear-gradient(
+                90deg,
+                #55e6ff,
+                #a66cff,
+                #ff5fc8
+            );
+
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .subtitle {
+            color: #9ca7c7;
+            margin-top: 5px;
+        }
+
+        /* =========================
+           SCORE BOARD
+        ========================= */
+
+        .scoreboard {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 10px;
+
+            margin-bottom: 12px;
+        }
+
+        .stat {
+            background: rgba(255,255,255,0.07);
+            border: 1px solid rgba(255,255,255,0.1);
+
+            border-radius: 14px;
+
+            padding: 10px;
+            text-align: center;
+
+            backdrop-filter: blur(10px);
+        }
+
+        .stat-label {
+            font-size: 11px;
+            color: #8f9ab8;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .stat-value {
+            margin-top: 4px;
+            font-size: 22px;
+            font-weight: bold;
+        }
+
+        /* =========================
+           GAME AREA
+        ========================= */
+
+        .game-container {
+            position: relative;
+
+            width: 100%;
+            height: 600px;
+
+            overflow: hidden;
+
+            border-radius: 24px;
+
+            border: 2px solid rgba(255,255,255,0.12);
+
+            background:
+                radial-gradient(circle at 30% 30%, #172052, transparent 20%),
+                radial-gradient(circle at 70% 60%, #26164d, transparent 25%),
+                #070918;
+
+            box-shadow:
+                0 30px 80px rgba(0,0,0,0.5),
+                inset 0 0 80px rgba(70,80,200,0.08);
+        }
+
+        /* Stars */
+
+        .star-bg {
+            position: absolute;
+            width: 3px;
+            height: 3px;
+
+            background: white;
+            border-radius: 50%;
+
+            opacity: 0.7;
+
+            animation: twinkle 2s infinite alternate;
+        }
+
+        @keyframes twinkle {
+            from {
+                opacity: 0.2;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        /* =========================
+           PLAYER
+        ========================= */
+
+        #player {
+            position: absolute;
+
+            width: 60px;
+            height: 60px;
+
+            display: flex;
+            justify-content: center;
+            align-items: center;
+
+            font-size: 42px;
+
+            z-index: 10;
+
+            user-select: none;
+
+            transition: transform 0.08s;
+        }
+
+        #player.shield {
+            border-radius: 50%;
+
+            box-shadow:
+                0 0 0 5px rgba(67, 214, 255, 0.25),
+                0 0 30px rgba(67, 214, 255, 0.9);
+        }
+
+        /* =========================
+           OBJECTS
+        ========================= */
+
+        .crystal,
+        .star,
+        .meteor,
+        .shield-item {
+            position: absolute;
+
+            display: flex;
+            justify-content: center;
+            align-items: center;
+
+            user-select: none;
+            pointer-events: none;
+
+            z-index: 5;
+        }
+
+        .crystal {
+            width: 38px;
+            height: 38px;
+
+            font-size: 32px;
+
+            filter:
+                drop-shadow(0 0 10px #4df6ff);
+
+            animation: crystalSpin 1.5s linear infinite;
+        }
+
+        @keyframes crystalSpin {
+            0% {
+                transform: rotate(0deg) scale(1);
+            }
+
+            50% {
+                transform: rotate(180deg) scale(1.15);
+            }
+
+            100% {
+                transform: rotate(360deg) scale(1);
+            }
+        }
+
+        .star {
+            width: 45px;
+            height: 45px;
+
+            font-size: 38px;
+
+            filter:
+                drop-shadow(0 0 15px #ffe66d);
+
+            animation: starPulse 0.7s infinite alternate;
+        }
+
+        @keyframes starPulse {
+            from {
+                transform: scale(0.85);
+            }
+
+            to {
+                transform: scale(1.2);
+            }
+        }
+
+        .meteor {
+            width: 45px;
+            height: 45px;
+
+            font-size: 38px;
+
+            filter:
+                drop-shadow(0 0 8px #ff5d5d);
+        }
+
+        .shield-item {
+            width: 45px;
+            height: 45px;
+
+            font-size: 35px;
+
+            filter:
+                drop-shadow(0 0 15px #52dfff);
+
+            animation: shieldPulse 0.8s infinite alternate;
+        }
+
+        @keyframes shieldPulse {
+            from {
+                transform: scale(0.85);
+            }
+
+            to {
+                transform: scale(1.15);
+            }
+        }
+
+        /* =========================
+           PARTICLE
+        ========================= */
+
+        .particle {
+            position: absolute;
+
+            width: 7px;
+            height: 7px;
+
+            border-radius: 50%;
+
+            pointer-events: none;
+
+            animation: particleAnimation 700ms ease-out forwards;
+
+            z-index: 20;
+        }
+
+        @keyframes particleAnimation {
+            from {
+                transform: translate(0, 0) scale(1);
+                opacity: 1;
+            }
+
+            to {
+                transform:
+                    translate(
+                        var(--x),
+                        var(--y)
+                    )
+                    scale(0);
+
+                opacity: 0;
+            }
+        }
+
+        /* =========================
+           MESSAGE
+        ========================= */
+
+        .message {
+            position: absolute;
+
+            left: 50%;
+            top: 50%;
+
+            transform: translate(-50%, -50%);
+
+            text-align: center;
+
+            z-index: 50;
+
+            width: 90%;
+            max-width: 500px;
+        }
+
+        .message h2 {
+            font-size: 42px;
+            margin-bottom: 10px;
+        }
+
+        .message p {
+            color: #aeb8d5;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        /* =========================
+           BUTTON
+        ========================= */
+
+        button {
+            border: none;
+
+            padding: 13px 25px;
+
+            border-radius: 12px;
+
+            font-size: 16px;
+            font-weight: bold;
+
+            color: white;
+
+            cursor: pointer;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #596cff,
+                    #9c4dff
+                );
+
+            box-shadow:
+                0 8px 25px rgba(91, 89, 255, 0.35);
+
+            transition:
+                transform 0.15s,
+                box-shadow 0.15s;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+
+            box-shadow:
+                0 12px 30px rgba(91, 89, 255, 0.5);
+        }
+
+        button:active {
+            transform: scale(0.96);
+        }
+
+        .secondary-button {
+            margin-left: 8px;
+
+            background:
+                rgba(255,255,255,0.1);
+
+            box-shadow: none;
+        }
+
+        /* =========================
+           CONTROLS
+        ========================= */
+
+        .controls {
+            text-align: center;
+
+            color: #8e99b7;
+
+            margin-top: 12px;
+
+            font-size: 14px;
+        }
+
+        .keys {
+            display: inline-flex;
+
+            gap: 5px;
+
+            margin: 0 5px;
+        }
+
+        .key {
+            display: inline-flex;
+
+            min-width: 28px;
+            height: 28px;
+
+            align-items: center;
+            justify-content: center;
+
+            border-radius: 6px;
+
+            background: rgba(255,255,255,0.1);
+
+            color: white;
+
+            font-weight: bold;
+        }
+
+        /* =========================
+           POPUP SCORE
+        ========================= */
+
+        .score-popup {
+            position: absolute;
+
+            color: #ffffff;
+
+            font-size: 20px;
+            font-weight: bold;
+
+            pointer-events: none;
+
+            z-index: 30;
+
+            animation: scorePopup 800ms ease-out forwards;
+        }
+
+        @keyframes scorePopup {
+            from {
+                transform: translateY(0);
+                opacity: 1;
+            }
+
+            to {
+                transform: translateY(-50px);
+                opacity: 0;
+            }
+        }
+
+        /* =========================
+           MOBILE
+        ========================= */
+
+        @media (max-width: 600px) {
+
+            .title {
+                font-size: 28px;
+            }
+
+            .scoreboard {
+                grid-template-columns:
+                    repeat(3, 1fr);
+            }
+
+            .game-container {
+                height: 500px;
+            }
+
+            .stat-value {
+                font-size: 18px;
+            }
+
+            .controls {
+                line-height: 2;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="game-wrapper">
+
+    <!-- HEADER -->
+
+    <div class="header">
+
+        <div class="title">
+            SPACE COLLECTOR
+        </div>
+
+        <div class="subtitle">
+            Collect crystals. Avoid meteors. Become a Space Hero!
+        </div>
+
+    </div>
+
+
+    <!-- SCOREBOARD -->
+
+    <div class="scoreboard">
+
+        <div class="stat">
+            <div class="stat-label">
+                Score
+            </div>
+
+            <div
+                class="stat-value"
+                id="score"
+            >
+                0
+            </div>
+        </div>
+
+
+        <div class="stat">
+            <div class="stat-label">
+                Level
+            </div>
+
+            <div
+                class="stat-value"
+                id="level"
+            >
+                1
+            </div>
+        </div>
+
+
+        <div class="stat">
+            <div class="stat-label">
+                Lives
+            </div>
+
+            <div
+                class="stat-value"
+                id="lives"
+            >
+                ❤️❤️❤️
+            </div>
+        </div>
+
+
+        <div class="stat">
+            <div class="stat-label">
+                Time
+            </div>
+
+            <div
+                class="stat-value"
+                id="time"
+            >
+                60
+            </div>
+        </div>
+
+
+        <div class="stat">
+            <div class="stat-label">
+                Best
+            </div>
+
+            <div
+                class="stat-value"
+                id="highScore"
+            >
+                0
+            </div>
+        </div>
+
+    </div>
+
+
+    <!-- GAME -->
+
+    <div
+        class="game-container"
+        id="game"
+    >
+
+        <!-- PLAYER -->
+
+        <div
+            id="player"
+            style="left: 50%; top: 85%; transform: translateX(-50%);"
+        >
+            🧑‍🚀
+        </div>
+
+
+        <!-- START MESSAGE -->
+
+        <div
+            class="message"
+            id="message"
+        >
+
+            <h2>
+                🚀 Ready?
+            </h2>
+
+            <p>
+                Collect as many crystals as possible.
+                Avoid meteors and grab special power-ups!
+            </p>
+
+            <button onclick="startGame()">
+                START GAME
+            </button>
+
+        </div>
+
+    </div>
+
+
+    <!-- CONTROLS -->
+
+    <div class="controls">
+
+        Move with
+
+        <span class="keys">
+            <span class="key">←</span>
+            <span class="key">→</span>
+        </span>
+
+        or
+
+        <span class="keys">
+            <span class="key">A</span>
+            <span class="key">D</span>
+        </span>
+
+        <br>
+
+        Collect 💎 | Bonus ⭐ | Avoid ☄️
+
+    </div>
+
+</div>
+
+
+<script>
+
+    // ==========================================
+    // GAME ELEMENTS
+    // ==========================================
+
+    const game = document.getElementById("game");
+
+    const player = document.getElementById("player");
+
+    const message = document.getElementById("message");
+
+    const scoreElement =
+        document.getElementById("score");
+
+    const levelElement =
+        document.getElementById("level");
+
+    const livesElement =
+        document.getElementById("lives");
+
+    const timeElement =
+        document.getElementById("time");
+
+    const highScoreElement =
+        document.getElementById("highScore");
+
+
+    // ==========================================
+    // GAME VARIABLES
+    // ==========================================
+
+    let score = 0;
+
+    let lives = 3;
+
+    let time = 60;
+
+    let level = 1;
+
+    let gameRunning = false;
+
+    let gamePaused = false;
+
+    let playerX = 50;
+
+    let playerSpeed = 6;
+
+    let objects = [];
+
+    let keys = {};
+
+    let gameLoop;
+
+    let timerLoop;
+
+    let spawnLoop;
+
+    let highScore =
+        Number(
+            localStorage.getItem("spaceCollectorHighScore")
+        ) || 0;
+
+    let shieldActive = false;
+
+    let shieldTimeout;
+
+
+    // ==========================================
+    // DISPLAY HIGH SCORE
+    // ==========================================
+
+    highScoreElement.textContent =
+        highScore;
+
+
+    // ==========================================
+    // CREATE BACKGROUND STARS
+    // ==========================================
+
+    function createStars() {
+
+        for (
+            let i = 0;
+            i < 70;
+            i++
+        ) {
+
+            const star =
+                document.createElement("div");
+
+            star.className =
+                "star-bg";
+
+            star.style.left =
+                Math.random() * 100 + "%";
+
+            star.style.top =
+                Math.random() * 100 + "%";
+
+            star.style.animationDelay =
+                Math.random() * 2 + "s";
+
+            game.appendChild(star);
+        }
+    }
+
+
+    createStars();
+
+
+    // ==========================================
+    // KEYBOARD
+    // ==========================================
+
+    document.addEventListener(
+        "keydown",
+        function(event) {
+
+            keys[event.key.toLowerCase()] = true;
+
+        }
+    );
+
+
+    document.addEventListener(
+        "keyup",
+        function(event) {
+
+            keys[event.key.toLowerCase()] = false;
+
+        }
+    );
+
+
+    // ==========================================
+    // START GAME
+    // ==========================================
+
+    function startGame() {
+
+        score = 0;
+
+        lives = 3;
+
+        time = 60;
+
+        level = 1;
+
+        playerX = 50;
+
+        shieldActive = false;
+
+        gameRunning = true;
+
+        gamePaused = false;
+
+
+        player.classList.remove("shield");
+
+
+        updateUI();
+
+
+        // Remove old objects
+
+        objects.forEach(
+            object => object.element.remove()
+        );
+
+        objects = [];
+
+
+        // Hide message
+
+        message.style.display =
+            "none";
+
+
+        // Start loops
+
+        gameLoop =
+            requestAnimationFrame(updateGame);
+
+        timerLoop =
+            setInterval(updateTimer, 1000);
+
+        spawnLoop =
+            setInterval(
+                spawnObject,
+                900
+            );
+
+
+        // Spawn first objects
+
+        spawnObject();
+
+        spawnObject();
+
+    }
+
+
+    // ==========================================
+    // GAME LOOP
+    // ==========================================
+
+    function updateGame() {
+
+        if (!gameRunning) {
+
+            return;
+        }
+
+
+        if (!gamePaused) {
+
+            movePlayer();
+
+            moveObjects();
+
+            checkCollisions();
+
+        }
+
+
+        gameLoop =
+            requestAnimationFrame(updateGame);
+
+    }
+
+
+    // ==========================================
+    // MOVE PLAYER
+    // ==========================================
+
+    function movePlayer() {
+
+        if (
+            keys["arrowleft"] ||
+            keys["a"]
+        ) {
+
+            playerX -= playerSpeed;
+
+        }
+
+
+        if (
+            keys["arrowright"] ||
+            keys["d"]
+        ) {
+
+            playerX += playerSpeed;
+
+        }
+
+
+        // Prevent player leaving screen
+
+        if (playerX < 5) {
+
+            playerX = 5;
+
+        }
+
+
+        if (playerX > 95) {
+
+            playerX = 95;
+
+        }
+
+
+        player.style.left =
+            playerX + "%";
+
+    }
+
+
+    // ==========================================
+    // SPAWN OBJECT
+    // ==========================================
+
+    function spawnObject() {
+
+        if (!gameRunning) {
+
+            return;
+        }
+
+
+        const random =
+            Math.random();
+
+
+        let type;
+
+
+        /*
+            60% = crystal
+            20% = meteor
+            10% = star
+            10% = shield
+        */
+
+        if (random < 0.60) {
+
+            type = "crystal";
+
+        }
+        else if (random < 0.80) {
+
+            type = "meteor";
+
+        }
+        else if (random < 0.90) {
+
+            type = "star";
+
+        }
+        else {
+
+            type = "shield";
+
+        }
+
+
+        createObject(type);
+
+    }
+
+
+    // ==========================================
+    // CREATE OBJECT
+    // ==========================================
+
+    function createObject(type) {
+
+        const element =
+            document.createElement("div");
+
+
+        element.className =
+            type;
+
+
+        if (type === "crystal") {
+
+            element.textContent =
+                "💎";
+
+        }
+
+        if (type === "meteor") {
+
+            element.textContent =
+                "☄️";
+
+        }
+
+        if (type === "star") {
+
+            element.textContent =
+                "⭐";
+
+        }
+
+        if (type === "shield") {
+
+            element.textContent =
+                "🛡️";
+
+        }
+
+
+        // Random horizontal position
+
+        const x =
+            Math.random() * 90 + 5;
+
+
+        element.style.left =
+            x + "%";
+
+
+        element.style.top =
+            "-60px";
+
+
+        game.appendChild(element);
+
+
+        objects.push({
+
+            element: element,
+
+            type: type,
+
+            x: x,
+
+            y: -60,
+
+            speed:
+                2 +
+                Math.random() * 2 +
+                level * 0.3
+
+        });
+
+    }
+
+
+    // ==========================================
+    // MOVE OBJECTS
+    // ==========================================
+
+    function moveObjects() {
+
+        objects.forEach(
+            object => {
+
+                object.y +=
+                    object.speed;
+
+
+                object.element.style.top =
+                    object.y + "px";
+
+            }
+        );
+
+
+        // Remove objects outside screen
+
+        objects =
+            objects.filter(
+                object => {
+
+                    if (
+                        object.y >
+                        game.clientHeight + 70
+                    ) {
+
+                        object.element.remove();
+
+                        return false;
+                    }
+
+                    return true;
+
+                }
+            );
+
+    }
+
+
+    // ==========================================
+    // COLLISION DETECTION
+    // ==========================================
+
+    function checkCollisions() {
+
+        const playerRect =
+            player.getBoundingClientRect();
+
+
+        objects.forEach(
+            object => {
+
+                const objectRect =
+                    object.element.getBoundingClientRect();
+
+
+                const collision =
+                    playerRect.left <
+                    objectRect.right &&
+
+                    playerRect.right >
+                    objectRect.left &&
+
+                    playerRect.top <
+                    objectRect.bottom &&
+
+                    playerRect.bottom >
+                    objectRect.top;
+
+
+                if (collision) {
+
+                    collectObject(object);
+
+                }
+
+            }
+        );
+
+    }
+
+
+    // ==========================================
+    // COLLECT OBJECT
+    // ==========================================
+
+    function collectObject(object) {
+
+        // Prevent collecting twice
+
+        if (!object.element.parentElement) {
+
+            return;
+        }
+
+
+        object.element.remove();
+
+
+        objects =
+            objects.filter(
+                item =>
+                    item !== object
+            );
+
+
+        // ===============================
+        // CRYSTAL
+        // ===============================
+
+        if (object.type === "crystal") {
+
+            score += 10;
+
+            createParticles(
+                object.x,
+                object.y,
+                "💎"
+            );
+
+            showScorePopup(
+                object.x,
+                object.y,
+                "+10"
+            );
+
+        }
+
+
+        // ===============================
+        // STAR
+        // ===============================
+
+        if (object.type === "star") {
+
+            score += 50;
+
+            createParticles(
+                object.x,
+                object.y,
+                "⭐"
+            );
+
+            showScorePopup(
+                object.x,
+                object.y,
+                "+50 BONUS!"
+            );
+
+        }
+
+
+        // ===============================
+        // SHIELD
+        // ===============================
+
+        if (object.type === "shield") {
+
+            activateShield();
+
+            showScorePopup(
+                object.x,
+                object.y,
+                "SHIELD!"
+            );
+
+        }
+
+
+        // ===============================
+        // METEOR
+        // ===============================
+
+        if (object.type === "meteor") {
+
+            if (shieldActive) {
+
+                score += 20;
+
+                createParticles(
+                    object.x,
+                    object.y,
+                    "💥"
+                );
+
+                showScorePopup(
+                    object.x,
+                    object.y,
+                    "BLOCKED!"
+                );
+
+            }
+            else {
+
+                lives--;
+
+                createParticles(
+                    object.x,
+                    object.y,
+                    "💥"
+                );
+
+                showScorePopup(
+                    object.x,
+                    object.y,
+                    "-1 LIFE"
+                );
+
+
+                // Player blink
+
+                player.style.transform =
+                    "translateX(-50%) scale(1.3)";
+
+
+                setTimeout(
+                    () => {
+
+                        player.style.transform =
+                            "translateX(-50%) scale(1)";
+
+                    },
+                    150
+                );
+
+
+                if (lives <= 0) {
+
+                    endGame();
+
+                }
+
+            }
+
+        }
+
+
+        // Check level
+
+        updateLevel();
+
+        updateUI();
+
+    }
+
+
+    // ==========================================
+    // SHIELD
+    // ==========================================
+
+    function activateShield() {
+
+        shieldActive = true;
+
+        player.classList.add("shield");
+
+
+        clearTimeout(shieldTimeout);
+
+
+        shieldTimeout =
+            setTimeout(
+                () => {
+
+                    shieldActive = false;
+
+                    player.classList.remove(
+                        "shield"
+                    );
+
+                },
+                7000
+            );
+
+    }
+
+
+    // ==========================================
+    // LEVEL SYSTEM
+    // ==========================================
+
+    function updateLevel() {
+
+        const newLevel =
+            Math.floor(score / 100) + 1;
+
+
+        if (newLevel > level) {
+
+            level =
+                newLevel;
+
+
+            levelUpEffect();
+
+        }
+
+    }
+
+
+    // ==========================================
+    // LEVEL UP EFFECT
+    // ==========================================
+
+    function levelUpEffect() {
+
+        const popup =
+            document.createElement("div");
+
+
+        popup.textContent =
+            "LEVEL " + level + "!";
+
+
+        popup.style.position =
+            "absolute";
+
+        popup.style.left =
+            "50%";
+
+        popup.style.top =
+            "35%";
+
+        popup.style.transform =
+            "translate(-50%, -50%)";
+
+        popup.style.fontSize =
+            "42px";
+
+        popup.style.fontWeight =
+            "900";
+
+        popup.style.color =
+            "#ffe66d";
+
+        popup.style.textShadow =
+            "0 0 20px #ffe66d";
+
+        popup.style.zIndex =
+            "100";
+
+
+        game.appendChild(popup);
+
+
+        setTimeout(
+            () => {
+
+                popup.remove();
+
+            },
+            1000
+        );
+
+    }
+
+
+    // ==========================================
+    // TIMER
+    // ==========================================
+
+    function updateTimer() {
+
+        if (
+            !gameRunning ||
+            gamePaused
+        ) {
+
+            return;
+        }
+
+
+        time--;
+
+
+        updateUI();
+
+
+        if (time <= 0) {
+
+            endGame();
+
+        }
+
+    }
+
+
+    // ==========================================
+    // UPDATE UI
+    // ==========================================
+
+    function updateUI() {
+
+        scoreElement.textContent =
+            score;
+
+
+        levelElement.textContent =
+            level;
+
+
+        timeElement.textContent =
+            time;
+
+
+        livesElement.textContent =
+            "❤️".repeat(lives);
+
+
+        highScoreElement.textContent =
+            highScore;
+
+    }
+
+
+    // ==========================================
+    // PARTICLES
+    // ==========================================
+
+    function createParticles(
+        xPercent,
+        y,
+        emoji
+    ) {
+
+        for (
+            let i = 0;
+            i < 8;
+            i++
+        ) {
+
+            const particle =
+                document.createElement("div");
+
+
+            particle.className =
+                "particle";
+
+
+            particle.textContent =
+                emoji;
+
+
+            particle.style.left =
+                xPercent + "%";
+
+
+            particle.style.top =
+                y + "px";
+
+
+            const angle =
+                Math.random() *
+                Math.PI *
+                2;
+
+
+            const distance =
+                30 +
+                Math.random() * 60;
+
+
+            particle.style.setProperty(
+                "--x",
+                Math.cos(angle) *
+                distance +
+                "px"
+            );
+
+
+            particle.style.setProperty(
+                "--y",
+                Math.sin(angle) *
+                distance +
+                "px"
+            );
+
+
+            game.appendChild(
+                particle
+            );
+
+
+            setTimeout(
+                () => {
+
+                    particle.remove();
+
+                },
+                700
+            );
+
+        }
+
+    }
+
+
+    // ==========================================
+    // SCORE POPUP
+    // ==========================================
+
+    function showScorePopup(
+        xPercent,
+        y,
+        text
+    ) {
+
+        const popup =
+            document.createElement("div");
+
+
+        popup.className =
+            "score-popup";
+
+
+        popup.textContent =
+            text;
+
+
+        popup.style.left =
+            xPercent + "%";
+
+
+        popup.style.top =
+            y + "px";
+
+
+        game.appendChild(
+            popup
+        );
+
+
+        setTimeout(
+            () => {
+
+                popup.remove();
+
+            },
+            800
+        );
+
+    }
+
+
+    // ==========================================
+    // END GAME
+    // ==========================================
+
+    function endGame() {
+
+        gameRunning = false;
+
+
+        clearInterval(
+            timerLoop
+        );
+
+
+        clearInterval(
+            spawnLoop
+        );
+
+
+        cancelAnimationFrame(
+            gameLoop
+        );
+
+
+        // Check high score
+
+        if (
+            score >
+            highScore
+        ) {
+
+            highScore =
+                score;
+
+
+            localStorage.setItem(
+                "spaceCollectorHighScore",
+                highScore
+            );
+
+        }
+
+
+        updateUI();
+
+
+        let title =
+            "GAME OVER";
+
+
+        if (score >= 300) {
+
+            title =
+                "LEGENDARY! 🚀";
+
+        }
+        else if (score >= 200) {
+
+            title =
+                "AMAZING! ⭐";
+
+        }
+        else if (score >= 100) {
+
+            title =
+                "GREAT JOB! 💎";
+
+        }
+
+
+        message.innerHTML = `
+
+            <h2>
+                ${title}
+            </h2>
+
+            <p>
+
+                Your Score:
+                <strong>
+                    ${score}
+                </strong>
+
+                <br>
+
+                Level:
+                <strong>
+                    ${level}
+                </strong>
+
+                <br>
+
+                Best Score:
+                <strong>
+                    ${highScore}
+                </strong>
+
+            </p>
+
+            <button onclick="startGame()">
+                PLAY AGAIN
+            </button>
+
+        `;
+
+
+        message.style.display =
+            "block";
+
+    }
+
+</script>
+
+</body>
+</html>

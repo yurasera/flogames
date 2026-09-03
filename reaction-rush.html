@@ -1,0 +1,1216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Reaction Rush</title>
+
+    <style>
+
+        /* =========================
+           BASIC
+        ========================= */
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background: #10131a;
+            color: white;
+
+            min-height: 100vh;
+
+            display: flex;
+            justify-content: center;
+            align-items: center;
+
+            padding: 20px;
+        }
+
+
+        /* =========================
+           GAME CONTAINER
+        ========================= */
+
+        .game {
+            width: 900px;
+            max-width: 100%;
+
+            background: #191d27;
+
+            border: 2px solid #303746;
+
+            border-radius: 24px;
+
+            padding: 24px;
+
+            box-shadow:
+                0 20px 60px rgba(0, 0, 0, 0.4);
+        }
+
+
+        /* =========================
+           HEADER
+        ========================= */
+
+        .header {
+            display: flex;
+
+            justify-content: space-between;
+            align-items: center;
+
+            margin-bottom: 20px;
+        }
+
+        .title {
+            font-size: 32px;
+            font-weight: bold;
+        }
+
+        .subtitle {
+            color: #9ca3af;
+            margin-top: 5px;
+        }
+
+
+        /* =========================
+           STATS
+        ========================= */
+
+        .stats {
+            display: grid;
+
+            grid-template-columns:
+                repeat(4, 1fr);
+
+            gap: 12px;
+
+            margin-bottom: 20px;
+        }
+
+        .stat {
+            background: #222733;
+
+            border-radius: 16px;
+
+            padding: 16px;
+
+            text-align: center;
+        }
+
+        .stat-label {
+            font-size: 12px;
+
+            color: #9ca3af;
+
+            text-transform: uppercase;
+
+            margin-bottom: 5px;
+        }
+
+        .stat-value {
+            font-size: 28px;
+
+            font-weight: bold;
+        }
+
+
+        /* =========================
+           GAME AREA
+        ========================= */
+
+        #gameArea {
+            position: relative;
+
+            width: 100%;
+            height: 500px;
+
+            background:
+                radial-gradient(
+                    circle at center,
+                    #252b38,
+                    #171b24
+                );
+
+            border-radius: 20px;
+
+            overflow: hidden;
+
+            border: 2px solid #343b4a;
+
+            cursor: crosshair;
+        }
+
+
+        /* =========================
+           TARGET
+        ========================= */
+
+        #target {
+            position: absolute;
+
+            width: 70px;
+            height: 70px;
+
+            border-radius: 50%;
+
+            background: #ff4d6d;
+
+            border: 5px solid white;
+
+            box-shadow:
+                0 0 0 8px rgba(255, 77, 109, 0.2),
+                0 0 30px rgba(255, 77, 109, 0.8);
+
+            cursor: pointer;
+
+            display: none;
+
+            transform: translate(-50%, -50%);
+
+            transition:
+                width 0.15s,
+                height 0.15s,
+                background 0.15s;
+        }
+
+
+        #target::after {
+            content: "";
+
+            position: absolute;
+
+            width: 20px;
+            height: 20px;
+
+            background: white;
+
+            border-radius: 50%;
+
+            top: 50%;
+            left: 50%;
+
+            transform: translate(-50%, -50%);
+        }
+
+
+        /* =========================
+           MESSAGE
+        ========================= */
+
+        #message {
+            position: absolute;
+
+            top: 50%;
+            left: 50%;
+
+            transform: translate(-50%, -50%);
+
+            text-align: center;
+
+            pointer-events: none;
+        }
+
+        #message h2 {
+            font-size: 42px;
+
+            margin-bottom: 10px;
+        }
+
+        #message p {
+            color: #aeb5c2;
+
+            font-size: 18px;
+        }
+
+
+        /* =========================
+           BUTTON
+        ========================= */
+
+        .controls {
+            display: flex;
+
+            justify-content: center;
+
+            margin-top: 20px;
+        }
+
+        button {
+            border: none;
+
+            background: #4f7cff;
+
+            color: white;
+
+            padding: 14px 30px;
+
+            border-radius: 12px;
+
+            font-size: 17px;
+
+            font-weight: bold;
+
+            cursor: pointer;
+
+            transition: 0.2s;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+
+            background: #668dff;
+        }
+
+        button:active {
+            transform: scale(0.96);
+        }
+
+
+        /* =========================
+           COMBO TEXT
+        ========================= */
+
+        .combo-text {
+            position: absolute;
+
+            pointer-events: none;
+
+            font-size: 24px;
+
+            font-weight: bold;
+
+            animation: comboAnimation 0.8s forwards;
+        }
+
+        @keyframes comboAnimation {
+
+            0% {
+                opacity: 1;
+
+                transform:
+                    translate(-50%, -50%)
+                    scale(1);
+            }
+
+            100% {
+                opacity: 0;
+
+                transform:
+                    translate(-50%, -130px)
+                    scale(1.4);
+            }
+        }
+
+
+        /* =========================
+           PARTICLES
+        ========================= */
+
+        .particle {
+            position: absolute;
+
+            width: 8px;
+            height: 8px;
+
+            border-radius: 50%;
+
+            pointer-events: none;
+
+            animation: particleAnimation 0.6s forwards;
+        }
+
+        @keyframes particleAnimation {
+
+            0% {
+                opacity: 1;
+
+                transform:
+                    translate(0, 0)
+                    scale(1);
+            }
+
+            100% {
+                opacity: 0;
+
+                transform:
+                    translate(
+                        var(--x),
+                        var(--y)
+                    )
+                    scale(0);
+            }
+        }
+
+
+        /* =========================
+           RESPONSIVE
+        ========================= */
+
+        @media (max-width: 700px) {
+
+            .stats {
+                grid-template-columns:
+                    repeat(2, 1fr);
+            }
+
+            #gameArea {
+                height: 400px;
+            }
+
+            .title {
+                font-size: 24px;
+            }
+
+        }
+
+    </style>
+</head>
+
+
+<body>
+
+
+    <div class="game">
+
+
+        <!-- =====================
+             HEADER
+        ====================== -->
+
+        <div class="header">
+
+            <div>
+
+                <div class="title">
+                    ⚡ Reaction Rush
+                </div>
+
+                <div class="subtitle">
+                    How fast can you click?
+                </div>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- =====================
+             STATS
+        ====================== -->
+
+        <div class="stats">
+
+            <div class="stat">
+
+                <div class="stat-label">
+                    Score
+                </div>
+
+                <div
+                    id="score"
+                    class="stat-value">
+                    0
+                </div>
+
+            </div>
+
+
+            <div class="stat">
+
+                <div class="stat-label">
+                    Time
+                </div>
+
+                <div
+                    id="time"
+                    class="stat-value">
+                    30
+                </div>
+
+            </div>
+
+
+            <div class="stat">
+
+                <div class="stat-label">
+                    Level
+                </div>
+
+                <div
+                    id="level"
+                    class="stat-value">
+                    1
+                </div>
+
+            </div>
+
+
+            <div class="stat">
+
+                <div class="stat-label">
+                    Best
+                </div>
+
+                <div
+                    id="best"
+                    class="stat-value">
+                    0
+                </div>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- =====================
+             GAME AREA
+        ====================== -->
+
+        <div id="gameArea">
+
+
+            <div id="message">
+
+                <h2>
+                    Ready?
+                </h2>
+
+                <p>
+                    Click START and hit the target!
+                </p>
+
+            </div>
+
+
+            <div id="target"></div>
+
+
+        </div>
+
+
+
+        <!-- =====================
+             BUTTON
+        ====================== -->
+
+        <div class="controls">
+
+            <button id="startButton">
+                START GAME
+            </button>
+
+        </div>
+
+
+    </div>
+
+
+
+    <script>
+
+        /* =====================================
+           GET HTML ELEMENTS
+        ===================================== */
+
+        const gameArea =
+            document.getElementById("gameArea");
+
+        const target =
+            document.getElementById("target");
+
+        const startButton =
+            document.getElementById("startButton");
+
+        const scoreElement =
+            document.getElementById("score");
+
+        const timeElement =
+            document.getElementById("time");
+
+        const levelElement =
+            document.getElementById("level");
+
+        const bestElement =
+            document.getElementById("best");
+
+        const message =
+            document.getElementById("message");
+
+
+        /* =====================================
+           GAME VARIABLES
+        ===================================== */
+
+        let score = 0;
+
+        let timeLeft = 30;
+
+        let level = 1;
+
+        let combo = 0;
+
+        let gameRunning = false;
+
+        let timer;
+
+        let targetTimeout;
+
+
+        /* =====================================
+           HIGH SCORE
+        ===================================== */
+
+        let bestScore =
+            Number(
+                localStorage.getItem("bestScore")
+            ) || 0;
+
+        bestElement.textContent =
+            bestScore;
+
+
+        /* =====================================
+           COLORS
+        ===================================== */
+
+        const colors = [
+
+            "#ff4d6d",
+            "#ff9f1c",
+            "#2ec4b6",
+            "#4f7cff",
+            "#a855f7",
+            "#f72585",
+            "#06d6a0"
+
+        ];
+
+
+        /* =====================================
+           START GAME
+        ===================================== */
+
+        function startGame() {
+
+            // Reset game
+            score = 0;
+
+            timeLeft = 30;
+
+            level = 1;
+
+            combo = 0;
+
+            gameRunning = true;
+
+
+            // Update display
+            scoreElement.textContent =
+                score;
+
+            timeElement.textContent =
+                timeLeft;
+
+            levelElement.textContent =
+                level;
+
+
+            // Hide message
+            message.style.display =
+                "none";
+
+
+            // Change button
+            startButton.textContent =
+                "RESTART GAME";
+
+
+            // Show target
+            target.style.display =
+                "block";
+
+
+            // Put target somewhere
+            moveTarget();
+
+
+            // Start countdown
+            timer =
+                setInterval(
+                    updateTimer,
+                    1000
+                );
+
+        }
+
+
+        /* =====================================
+           TIMER
+        ===================================== */
+
+        function updateTimer() {
+
+            timeLeft--;
+
+            timeElement.textContent =
+                timeLeft;
+
+
+            if (timeLeft <= 0) {
+
+                endGame();
+
+            }
+
+        }
+
+
+        /* =====================================
+           END GAME
+        ===================================== */
+
+        function endGame() {
+
+            gameRunning = false;
+
+
+            clearInterval(timer);
+
+            clearTimeout(targetTimeout);
+
+
+            target.style.display =
+                "none";
+
+
+            message.style.display =
+                "block";
+
+
+            message.innerHTML = `
+
+                <h2>
+                    🎉 Game Over!
+                </h2>
+
+                <p>
+                    Your score: ${score}
+                </p>
+
+            `;
+
+
+            if (score > bestScore) {
+
+                bestScore =
+                    score;
+
+                localStorage.setItem(
+                    "bestScore",
+                    bestScore
+                );
+
+                bestElement.textContent =
+                    bestScore;
+
+            }
+
+        }
+
+
+        /* =====================================
+           MOVE TARGET
+        ===================================== */
+
+        function moveTarget() {
+
+            if (!gameRunning) {
+                return;
+            }
+
+
+            /*
+                Ukuran target semakin kecil
+                ketika level semakin tinggi.
+            */
+
+            const size =
+                Math.max(
+                    35,
+                    70 - (level - 1) * 5
+                );
+
+
+            target.style.width =
+                size + "px";
+
+            target.style.height =
+                size + "px";
+
+
+            /*
+                Mengambil ukuran area game
+            */
+
+            const areaWidth =
+                gameArea.clientWidth;
+
+            const areaHeight =
+                gameArea.clientHeight;
+
+
+            /*
+                Membuat posisi random
+            */
+
+            const x =
+                Math.random() *
+                (areaWidth - size)
+                + size / 2;
+
+            const y =
+                Math.random() *
+                (areaHeight - size)
+                + size / 2;
+
+
+            /*
+                Memindahkan target
+            */
+
+            target.style.left =
+                x + "px";
+
+            target.style.top =
+                y + "px";
+
+
+            /*
+                Mengganti warna
+            */
+
+            const randomColor =
+                colors[
+                    Math.floor(
+                        Math.random() *
+                        colors.length
+                    )
+                ];
+
+            target.style.background =
+                randomColor;
+
+
+            target.style.boxShadow = `
+                0 0 0 8px ${randomColor}33,
+                0 0 30px ${randomColor}
+            `;
+
+
+            /*
+                Target akan berpindah
+                otomatis setelah beberapa waktu.
+
+                Level tinggi =
+                target bergerak lebih cepat.
+            */
+
+            const speed =
+                Math.max(
+                    500,
+                    1400 - (level * 100)
+                );
+
+
+            targetTimeout =
+                setTimeout(
+                    moveTarget,
+                    speed
+                );
+
+        }
+
+
+        /* =====================================
+           TARGET CLICK
+        ===================================== */
+
+        target.addEventListener(
+            "click",
+            function(event) {
+
+                if (!gameRunning) {
+                    return;
+                }
+
+
+                /*
+                    Mencegah click
+                    dianggap sebagai click
+                    pada game area.
+                */
+
+                event.stopPropagation();
+
+
+                /* =============================
+                   COMBO
+                ============================= */
+
+                combo++;
+
+
+                /*
+                    Score dasar = 10
+
+                    Jika combo semakin tinggi,
+                    score semakin besar.
+                */
+
+                const points =
+                    10 + combo;
+
+
+                score += points;
+
+
+                scoreElement.textContent =
+                    score;
+
+
+                /* =============================
+                   LEVEL
+                ============================= */
+
+                /*
+                    Setiap 100 score,
+                    level bertambah.
+                */
+
+                level =
+                    Math.floor(score / 100) + 1;
+
+
+                levelElement.textContent =
+                    level;
+
+
+                /* =============================
+                   EFFECT
+                ============================= */
+
+                createParticles(
+                    event.clientX,
+                    event.clientY
+                );
+
+
+                showCombo(
+                    event.clientX,
+                    event.clientY,
+                    points
+                );
+
+
+                /*
+                    Pindahkan target
+                    ke tempat baru.
+                */
+
+                clearTimeout(targetTimeout);
+
+                moveTarget();
+
+            }
+        );
+
+
+        /* =====================================
+           WRONG CLICK
+        ===================================== */
+
+        gameArea.addEventListener(
+            "click",
+            function(event) {
+
+                if (!gameRunning) {
+                    return;
+                }
+
+
+                /*
+                    Jika yang diklik bukan target,
+                    combo kembali ke 0.
+                */
+
+                if (
+                    event.target !== target
+                ) {
+
+                    combo = 0;
+
+                    showMiss(
+                        event.clientX,
+                        event.clientY
+                    );
+
+                }
+
+            }
+        );
+
+
+        /* =====================================
+           COMBO TEXT
+        ===================================== */
+
+        function showCombo(
+            x,
+            y,
+            points
+        ) {
+
+            const text =
+                document.createElement(
+                    "div"
+                );
+
+
+            text.className =
+                "combo-text";
+
+
+            if (combo >= 5) {
+
+                text.textContent =
+                    `🔥 COMBO x${combo}! +${points}`;
+
+            } else {
+
+                text.textContent =
+                    `+${points}`;
+
+            }
+
+
+            /*
+                Posisi berdasarkan
+                posisi mouse.
+            */
+
+            const rect =
+                gameArea.getBoundingClientRect();
+
+
+            text.style.left =
+                (x - rect.left) + "px";
+
+            text.style.top =
+                (y - rect.top) + "px";
+
+
+            gameArea.appendChild(
+                text
+            );
+
+
+            setTimeout(
+                function() {
+
+                    text.remove();
+
+                },
+                800
+            );
+
+        }
+
+
+        /* =====================================
+           MISS
+        ===================================== */
+
+        function showMiss(
+            x,
+            y
+        ) {
+
+            const text =
+                document.createElement(
+                    "div"
+                );
+
+
+            text.className =
+                "combo-text";
+
+
+            text.textContent =
+                "MISS!";
+
+
+            text.style.color =
+                "#ff6b6b";
+
+
+            const rect =
+                gameArea.getBoundingClientRect();
+
+
+            text.style.left =
+                (x - rect.left) + "px";
+
+            text.style.top =
+                (y - rect.top) + "px";
+
+
+            gameArea.appendChild(
+                text
+            );
+
+
+            setTimeout(
+                function() {
+
+                    text.remove();
+
+                },
+                800
+            );
+
+        }
+
+
+        /* =====================================
+           PARTICLES
+        ===================================== */
+
+        function createParticles(
+            x,
+            y
+        ) {
+
+            const rect =
+                gameArea.getBoundingClientRect();
+
+
+            const centerX =
+                x - rect.left;
+
+            const centerY =
+                y - rect.top;
+
+
+            /*
+                Membuat 12 particle
+            */
+
+            for (
+                let i = 0;
+                i < 12;
+                i++
+            ) {
+
+                const particle =
+                    document.createElement(
+                        "div"
+                    );
+
+
+                particle.className =
+                    "particle";
+
+
+                /*
+                    Posisi awal
+                */
+
+                particle.style.left =
+                    centerX + "px";
+
+                particle.style.top =
+                    centerY + "px";
+
+
+                /*
+                    Arah particle random
+                */
+
+                const angle =
+                    Math.random() *
+                    Math.PI * 2;
+
+
+                const distance =
+                    30 +
+                    Math.random() * 70;
+
+
+                const xMove =
+                    Math.cos(angle) *
+                    distance;
+
+
+                const yMove =
+                    Math.sin(angle) *
+                    distance;
+
+
+                particle.style.setProperty(
+                    "--x",
+                    xMove + "px"
+                );
+
+                particle.style.setProperty(
+                    "--y",
+                    yMove + "px"
+                );
+
+
+                gameArea.appendChild(
+                    particle
+                );
+
+
+                /*
+                    Hapus particle
+                    setelah animasi selesai.
+                */
+
+                setTimeout(
+                    function() {
+
+                        particle.remove();
+
+                    },
+                    600
+                );
+
+            }
+
+        }
+
+
+        /* =====================================
+           START BUTTON
+        ===================================== */
+
+        startButton.addEventListener(
+            "click",
+            startGame
+        );
+
+
+    </script>
+
+</body>
+</html>

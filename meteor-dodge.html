@@ -1,0 +1,2307 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Meteor Dodge</title>
+
+
+    <style>
+
+        /* =========================================
+           RESET
+        ========================================= */
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+
+        /* =========================================
+           BODY
+        ========================================= */
+
+        body {
+
+            min-height: 100vh;
+
+            font-family:
+                Arial,
+                Helvetica,
+                sans-serif;
+
+            background:
+                radial-gradient(
+                    circle at top,
+                    #202a44,
+                    #080b14 70%
+                );
+
+            color: white;
+
+            display: flex;
+
+            justify-content: center;
+
+            align-items: center;
+
+            padding: 20px;
+
+            overflow: hidden;
+        }
+
+
+        /* =========================================
+           GAME CONTAINER
+        ========================================= */
+
+        .game {
+
+            width: 100%;
+
+            max-width: 950px;
+
+            background: #101522;
+
+            border:
+                2px solid #293247;
+
+            border-radius: 24px;
+
+            padding: 24px;
+
+            box-shadow:
+                0 25px 80px
+                rgba(0, 0, 0, 0.5);
+        }
+
+
+        /* =========================================
+           HEADER
+        ========================================= */
+
+        .header {
+
+            display: flex;
+
+            justify-content:
+                space-between;
+
+            align-items: center;
+
+            margin-bottom: 18px;
+        }
+
+
+        .title {
+
+            font-size: 32px;
+
+            font-weight: 800;
+        }
+
+
+        .subtitle {
+
+            color: #8d98ac;
+
+            margin-top: 5px;
+
+            font-size: 15px;
+        }
+
+
+        /* =========================================
+           STATS
+        ========================================= */
+
+        .stats {
+
+            display: grid;
+
+            grid-template-columns:
+                repeat(5, 1fr);
+
+            gap: 10px;
+
+            margin-bottom: 16px;
+        }
+
+
+        .stat {
+
+            background: #1a2130;
+
+            border:
+                1px solid #2b3447;
+
+            border-radius: 14px;
+
+            padding: 12px;
+
+            text-align: center;
+        }
+
+
+        .stat-label {
+
+            color: #8994a8;
+
+            font-size: 11px;
+
+            text-transform: uppercase;
+
+            margin-bottom: 5px;
+        }
+
+
+        .stat-value {
+
+            font-size: 22px;
+
+            font-weight: bold;
+        }
+
+
+        /* =========================================
+           GAME AREA
+        ========================================= */
+
+        #gameArea {
+
+            position: relative;
+
+            width: 100%;
+
+            height: 570px;
+
+            overflow: hidden;
+
+            border-radius: 20px;
+
+            border:
+                2px solid #344057;
+
+            background:
+
+                radial-gradient(
+                    circle at 50% 20%,
+                    #283653 0%,
+                    #111827 45%,
+                    #070b13 100%
+                );
+
+            cursor: none;
+        }
+
+
+        /* =========================================
+           STARS
+        ========================================= */
+
+        .star {
+
+            position: absolute;
+
+            width: 3px;
+
+            height: 3px;
+
+            background: white;
+
+            border-radius: 50%;
+
+            opacity: 0.7;
+
+            animation:
+                starTwinkle
+                1.5s
+                infinite
+                alternate;
+        }
+
+
+        @keyframes starTwinkle {
+
+            from {
+                opacity: 0.2;
+            }
+
+            to {
+                opacity: 1;
+            }
+
+        }
+
+
+        /* =========================================
+           PLAYER
+        ========================================= */
+
+        #player {
+
+            position: absolute;
+
+            width: 62px;
+
+            height: 62px;
+
+            left: 50%;
+
+            bottom: 25px;
+
+            transform:
+                translateX(-50%);
+
+            z-index: 10;
+
+            display: flex;
+
+            justify-content: center;
+
+            align-items: center;
+
+            font-size: 48px;
+
+            user-select: none;
+
+            filter:
+                drop-shadow(
+                    0 0 12px
+                    rgba(80, 170, 255, 0.8)
+                );
+        }
+
+
+        /* =========================================
+           SHIELD
+        ========================================= */
+
+        #player.shield {
+
+            filter:
+                drop-shadow(
+                    0 0 15px
+                    #5ee7ff
+                );
+        }
+
+
+        #player.shield::before {
+
+            content: "";
+
+            position: absolute;
+
+            width: 76px;
+
+            height: 76px;
+
+            border:
+                4px solid #5ee7ff;
+
+            border-radius: 50%;
+
+            box-shadow:
+                0 0 25px
+                rgba(94, 231, 255, 0.8);
+
+            animation:
+                shieldAnimation
+                0.8s
+                infinite
+                alternate;
+        }
+
+
+        @keyframes shieldAnimation {
+
+            from {
+                transform: scale(0.95);
+                opacity: 0.5;
+            }
+
+            to {
+                transform: scale(1.08);
+                opacity: 1;
+            }
+
+        }
+
+
+        /* =========================================
+           METEOR
+        ========================================= */
+
+        .meteor {
+
+            position: absolute;
+
+            width: 50px;
+
+            height: 50px;
+
+            border-radius: 50%;
+
+            display: flex;
+
+            justify-content: center;
+
+            align-items: center;
+
+            font-size: 35px;
+
+            z-index: 5;
+
+            user-select: none;
+
+            filter:
+                drop-shadow(
+                    0 0 8px
+                    rgba(255, 70, 70, 0.6)
+                );
+        }
+
+
+        /* =========================================
+           BONUS
+        ========================================= */
+
+        .bonus {
+
+            position: absolute;
+
+            width: 48px;
+
+            height: 48px;
+
+            display: flex;
+
+            justify-content: center;
+
+            align-items: center;
+
+            font-size: 36px;
+
+            z-index: 6;
+
+            animation:
+                bonusAnimation
+                0.7s
+                infinite
+                alternate;
+
+            filter:
+                drop-shadow(
+                    0 0 15px
+                    rgba(255, 220, 80, 0.9)
+                );
+        }
+
+
+        @keyframes bonusAnimation {
+
+            from {
+
+                transform:
+                    scale(0.85)
+                    rotate(-8deg);
+            }
+
+            to {
+
+                transform:
+                    scale(1.15)
+                    rotate(8deg);
+            }
+
+        }
+
+
+        /* =========================================
+           MESSAGE
+        ========================================= */
+
+        #message {
+
+            position: absolute;
+
+            top: 50%;
+
+            left: 50%;
+
+            transform:
+                translate(-50%, -50%);
+
+            width: 90%;
+
+            text-align: center;
+
+            z-index: 30;
+        }
+
+
+        #message h2 {
+
+            font-size: 46px;
+
+            margin-bottom: 12px;
+
+            text-shadow:
+                0 4px 15px
+                rgba(0, 0, 0, 0.5);
+        }
+
+
+        #message p {
+
+            color: #c2cad8;
+
+            line-height: 1.7;
+
+            font-size: 17px;
+        }
+
+
+        /* =========================================
+           BUTTON
+        ========================================= */
+
+        button {
+
+            border: none;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #4f8cff,
+                    #7c5cff
+                );
+
+            color: white;
+
+            padding:
+                14px 32px;
+
+            margin-top: 18px;
+
+            border-radius: 13px;
+
+            font-size: 17px;
+
+            font-weight: bold;
+
+            cursor: pointer;
+
+            box-shadow:
+                0 8px 25px
+                rgba(79, 140, 255, 0.25);
+
+            transition:
+                transform 0.2s;
+        }
+
+
+        button:hover {
+
+            transform:
+                translateY(-3px)
+                scale(1.02);
+        }
+
+
+        button:active {
+
+            transform:
+                scale(0.96);
+        }
+
+
+        /* =========================================
+           SCORE POPUP
+        ========================================= */
+
+        .popup {
+
+            position: absolute;
+
+            pointer-events: none;
+
+            z-index: 50;
+
+            font-size: 25px;
+
+            font-weight: bold;
+
+            animation:
+                popupAnimation
+                0.9s
+                forwards;
+        }
+
+
+        @keyframes popupAnimation {
+
+            0% {
+
+                opacity: 1;
+
+                transform:
+                    translate(-50%, 0)
+                    scale(1);
+            }
+
+            100% {
+
+                opacity: 0;
+
+                transform:
+                    translate(-50%, -80px)
+                    scale(1.3);
+            }
+
+        }
+
+
+        /* =========================================
+           PARTICLES
+        ========================================= */
+
+        .particle {
+
+            position: absolute;
+
+            width: 7px;
+
+            height: 7px;
+
+            border-radius: 50%;
+
+            pointer-events: none;
+
+            z-index: 40;
+
+            animation:
+                particleAnimation
+                0.7s
+                forwards;
+        }
+
+
+        @keyframes particleAnimation {
+
+            0% {
+
+                opacity: 1;
+
+                transform:
+                    translate(0, 0)
+                    scale(1);
+            }
+
+            100% {
+
+                opacity: 0;
+
+                transform:
+                    translate(
+                        var(--x),
+                        var(--y)
+                    )
+                    scale(0);
+            }
+
+        }
+
+
+        /* =========================================
+           LEVEL UP
+        ========================================= */
+
+        .level-up {
+
+            position: absolute;
+
+            top: 42%;
+
+            left: 50%;
+
+            transform:
+                translate(-50%, -50%);
+
+            z-index: 60;
+
+            pointer-events: none;
+
+            font-size: 45px;
+
+            font-weight: bold;
+
+            animation:
+                levelAnimation
+                1.2s
+                forwards;
+        }
+
+
+        @keyframes levelAnimation {
+
+            0% {
+
+                opacity: 0;
+
+                transform:
+                    translate(-50%, -50%)
+                    scale(0.5);
+            }
+
+            25% {
+
+                opacity: 1;
+
+                transform:
+                    translate(-50%, -50%)
+                    scale(1.2);
+            }
+
+            100% {
+
+                opacity: 0;
+
+                transform:
+                    translate(-50%, -100%)
+                    scale(1);
+            }
+
+        }
+
+
+        /* =========================================
+           CONTROLS
+        ========================================= */
+
+        .controls {
+
+            text-align: center;
+
+            color: #8994a8;
+
+            margin-top: 14px;
+
+            font-size: 14px;
+        }
+
+
+        /* =========================================
+           RESPONSIVE
+        ========================================= */
+
+        @media (max-width: 750px) {
+
+            .stats {
+
+                grid-template-columns:
+                    repeat(3, 1fr);
+            }
+
+
+            #gameArea {
+
+                height: 500px;
+            }
+
+
+            .title {
+
+                font-size: 25px;
+            }
+
+        }
+
+
+        @media (max-width: 500px) {
+
+            .stats {
+
+                grid-template-columns:
+                    repeat(2, 1fr);
+            }
+
+
+            #gameArea {
+
+                height: 450px;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<div class="game">
+
+
+    <!-- =====================================
+         HEADER
+    ====================================== -->
+
+    <div class="header">
+
+        <div>
+
+            <div class="title">
+                ☄️ Meteor Dodge
+            </div>
+
+            <div class="subtitle">
+                Survive the meteor storm!
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- =====================================
+         STATS
+    ====================================== -->
+
+    <div class="stats">
+
+        <div class="stat">
+
+            <div class="stat-label">
+                Score
+            </div>
+
+            <div
+                id="score"
+                class="stat-value">
+                0
+            </div>
+
+        </div>
+
+
+        <div class="stat">
+
+            <div class="stat-label">
+                Time
+            </div>
+
+            <div
+                id="time"
+                class="stat-value">
+                0
+            </div>
+
+        </div>
+
+
+        <div class="stat">
+
+            <div class="stat-label">
+                Level
+            </div>
+
+            <div
+                id="level"
+                class="stat-value">
+                1
+            </div>
+
+        </div>
+
+
+        <div class="stat">
+
+            <div class="stat-label">
+                Lives
+            </div>
+
+            <div
+                id="lives"
+                class="stat-value">
+                ❤️❤️❤️
+            </div>
+
+        </div>
+
+
+        <div class="stat">
+
+            <div class="stat-label">
+                Best
+            </div>
+
+            <div
+                id="best"
+                class="stat-value">
+                0
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- =====================================
+         GAME AREA
+    ====================================== -->
+
+    <div id="gameArea">
+
+
+        <!-- MESSAGE -->
+
+        <div id="message">
+
+            <h2>
+                ☄️ Meteor Dodge
+            </h2>
+
+            <p>
+
+                Move your spaceship.
+
+                <br>
+
+                Avoid the meteors.
+
+                <br>
+
+                Collect ⭐ and 🛡️.
+
+                <br>
+
+                <strong>
+                    ← → or A / D
+                </strong>
+
+            </p>
+
+            <button id="startButton">
+                START GAME
+            </button>
+
+        </div>
+
+
+        <!-- PLAYER -->
+
+        <div id="player">
+            🚀
+        </div>
+
+
+    </div>
+
+
+    <!-- =====================================
+         CONTROLS
+    ====================================== -->
+
+    <div class="controls">
+
+        ← → or A / D to move
+        &nbsp;&nbsp; • &nbsp;&nbsp;
+        ⭐ Bonus
+        &nbsp;&nbsp; • &nbsp;&nbsp;
+        🛡️ Shield
+
+    </div>
+
+
+</div>
+
+
+
+<script>
+
+    /* =====================================================
+       HTML ELEMENTS
+    ===================================================== */
+
+    const gameArea =
+        document.getElementById(
+            "gameArea"
+        );
+
+
+    const player =
+        document.getElementById(
+            "player"
+        );
+
+
+    const message =
+        document.getElementById(
+            "message"
+        );
+
+
+    const startButton =
+        document.getElementById(
+            "startButton"
+        );
+
+
+    const scoreElement =
+        document.getElementById(
+            "score"
+        );
+
+
+    const timeElement =
+        document.getElementById(
+            "time"
+        );
+
+
+    const levelElement =
+        document.getElementById(
+            "level"
+        );
+
+
+    const livesElement =
+        document.getElementById(
+            "lives"
+        );
+
+
+    const bestElement =
+        document.getElementById(
+            "best"
+        );
+
+
+    /* =====================================================
+       GAME VARIABLES
+    ===================================================== */
+
+    let score = 0;
+
+    let survivalTime = 0;
+
+    let level = 1;
+
+    let lives = 3;
+
+    let playerX = 0;
+
+    let gameRunning = false;
+
+    let timer;
+
+    let spawnTimer;
+
+    let animationFrame;
+
+
+    /*
+        Semua meteor dan bonus
+        disimpan di array.
+    */
+
+    let objects = [];
+
+
+    /*
+        Keyboard state.
+    */
+
+    const keys = {};
+
+
+    /* =====================================================
+       HIGH SCORE
+    ===================================================== */
+
+    let bestScore =
+        Number(
+            localStorage.getItem(
+                "meteorBestScore"
+            )
+        ) || 0;
+
+
+    bestElement.textContent =
+        bestScore;
+
+
+    /* =====================================================
+       KEYBOARD INPUT
+    ===================================================== */
+
+    document.addEventListener(
+        "keydown",
+        function(event) {
+
+            keys[
+                event.key.toLowerCase()
+            ] = true;
+
+        }
+    );
+
+
+    document.addEventListener(
+        "keyup",
+        function(event) {
+
+            keys[
+                event.key.toLowerCase()
+            ] = false;
+
+        }
+    );
+
+
+    /* =====================================================
+       CREATE BACKGROUND STARS
+    ===================================================== */
+
+    function createStars() {
+
+        /*
+            Buat 60 bintang.
+        */
+
+        for (
+            let i = 0;
+            i < 60;
+            i++
+        ) {
+
+            const star =
+                document.createElement(
+                    "div"
+                );
+
+
+            star.className =
+                "star";
+
+
+            /*
+                Posisi random.
+            */
+
+            star.style.left =
+                Math.random() *
+                100 + "%";
+
+
+            star.style.top =
+                Math.random() *
+                100 + "%";
+
+
+            /*
+                Random delay
+                supaya tidak berkedip
+                bersamaan.
+            */
+
+            star.style.animationDelay =
+                Math.random() *
+                2 + "s";
+
+
+            gameArea.appendChild(
+                star
+            );
+
+        }
+
+    }
+
+
+    createStars();
+
+
+    /* =====================================================
+       START GAME
+    ===================================================== */
+
+    startButton.addEventListener(
+        "click",
+        startGame
+    );
+
+
+    function startGame() {
+
+        /*
+            Reset game.
+        */
+
+        score = 0;
+
+        survivalTime = 0;
+
+        level = 1;
+
+        lives = 3;
+
+        gameRunning = true;
+
+
+        /*
+            Reset UI.
+        */
+
+        scoreElement.textContent =
+            score;
+
+
+        timeElement.textContent =
+            survivalTime;
+
+
+        levelElement.textContent =
+            level;
+
+
+        updateLives();
+
+
+        /*
+            Hapus semua object
+            dari game sebelumnya.
+        */
+
+        objects.forEach(
+            function(object) {
+
+                object.element.remove();
+
+            }
+        );
+
+
+        objects = [];
+
+
+        /*
+            Posisi player.
+        */
+
+        playerX =
+            (
+                gameArea.clientWidth -
+                player.offsetWidth
+            ) / 2;
+
+
+        player.style.left =
+            playerX + "px";
+
+
+        player.classList.remove(
+            "shield"
+        );
+
+
+        /*
+            Sembunyikan message.
+        */
+
+        message.style.display =
+            "none";
+
+
+        /*
+            Timer survival.
+        */
+
+        timer =
+            setInterval(
+                updateTimer,
+                1000
+            );
+
+
+        /*
+            Spawn meteor.
+        */
+
+        spawnTimer =
+            setInterval(
+                spawnObject,
+                650
+            );
+
+
+        /*
+            Game loop.
+        */
+
+        animationFrame =
+            requestAnimationFrame(
+                gameLoop
+            );
+
+    }
+
+
+    /* =====================================================
+       TIMER
+    ===================================================== */
+
+    function updateTimer() {
+
+        if (!gameRunning) {
+
+            return;
+
+        }
+
+
+        survivalTime++;
+
+
+        timeElement.textContent =
+            survivalTime;
+
+
+        /*
+            Score berdasarkan
+            lama bertahan.
+        */
+
+        score += 2;
+
+
+        scoreElement.textContent =
+            score;
+
+
+        /*
+            Level naik setiap
+            10 detik.
+        */
+
+        const newLevel =
+            Math.floor(
+                survivalTime / 10
+            ) + 1;
+
+
+        if (
+            newLevel > level
+        ) {
+
+            level =
+                newLevel;
+
+
+            levelElement.textContent =
+                level;
+
+
+            showLevelUp();
+
+        }
+
+    }
+
+
+    /* =====================================================
+       SPAWN OBJECT
+    ===================================================== */
+
+    function spawnObject() {
+
+        if (!gameRunning) {
+
+            return;
+
+        }
+
+
+        const element =
+            document.createElement(
+                "div"
+            );
+
+
+        /*
+            Random object.
+        */
+
+        const random =
+            Math.random();
+
+
+        let type;
+
+
+        /*
+            10% = Shield
+        */
+
+        if (
+            random < 0.10
+        ) {
+
+            type = "shield";
+
+            element.textContent =
+                "🛡️";
+
+            element.className =
+                "bonus";
+
+        }
+
+
+        /*
+            15% = Star
+        */
+
+        else if (
+            random < 0.25
+        ) {
+
+            type = "star";
+
+            element.textContent =
+                "⭐";
+
+            element.className =
+                "bonus";
+
+        }
+
+
+        /*
+            75% = Meteor
+        */
+
+        else {
+
+            type = "meteor";
+
+            element.textContent =
+                "☄️";
+
+            element.className =
+                "meteor";
+
+        }
+
+
+        /*
+            Random X.
+        */
+
+        const maxX =
+            gameArea.clientWidth -
+            50;
+
+
+        const x =
+            Math.random() *
+            maxX;
+
+
+        /*
+            Start dari atas.
+        */
+
+        const y = -60;
+
+
+        element.style.left =
+            x + "px";
+
+
+        element.style.top =
+            y + "px";
+
+
+        gameArea.appendChild(
+            element
+        );
+
+
+        /*
+            Meteor semakin cepat
+            ketika level meningkat.
+        */
+
+        const speed =
+            2 +
+            Math.random() * 2 +
+            level * 0.5;
+
+
+        /*
+            Simpan object.
+        */
+
+        objects.push({
+
+            element: element,
+
+            x: x,
+
+            y: y,
+
+            speed: speed,
+
+            type: type
+
+        });
+
+    }
+
+
+    /* =====================================================
+       GAME LOOP
+    ===================================================== */
+
+    function gameLoop() {
+
+        if (!gameRunning) {
+
+            return;
+
+        }
+
+
+        movePlayer();
+
+
+        /*
+            Periksa setiap object.
+        */
+
+        for (
+            let i = objects.length - 1;
+            i >= 0;
+            i--
+        ) {
+
+            const object =
+                objects[i];
+
+
+            /*
+                Gerakkan object
+                ke bawah.
+            */
+
+            object.y +=
+                object.speed;
+
+
+            object.element.style.top =
+                object.y + "px";
+
+
+            /*
+                Cek collision.
+            */
+
+            if (
+                checkCollision(object)
+            ) {
+
+                handleCollision(i);
+
+                continue;
+
+            }
+
+
+            /*
+                Hapus object
+                kalau sudah keluar layar.
+            */
+
+            if (
+                object.y >
+                gameArea.clientHeight
+            ) {
+
+                removeObject(i);
+
+            }
+
+        }
+
+
+        /*
+            Jalankan frame berikutnya.
+        */
+
+        animationFrame =
+            requestAnimationFrame(
+                gameLoop
+            );
+
+    }
+
+
+    /* =====================================================
+       MOVE PLAYER
+    ===================================================== */
+
+    function movePlayer() {
+
+        const playerSpeed = 8;
+
+
+        /*
+            Gerak kiri.
+        */
+
+        if (
+            keys["arrowleft"] ||
+            keys["a"]
+        ) {
+
+            playerX -=
+                playerSpeed;
+
+        }
+
+
+        /*
+            Gerak kanan.
+        */
+
+        if (
+            keys["arrowright"] ||
+            keys["d"]
+        ) {
+
+            playerX +=
+                playerSpeed;
+
+        }
+
+
+        /*
+            Batas kiri.
+        */
+
+        if (
+            playerX < 0
+        ) {
+
+            playerX = 0;
+
+        }
+
+
+        /*
+            Batas kanan.
+        */
+
+        const maxX =
+            gameArea.clientWidth -
+            player.offsetWidth;
+
+
+        if (
+            playerX > maxX
+        ) {
+
+            playerX = maxX;
+
+        }
+
+
+        player.style.left =
+            playerX + "px";
+
+    }
+
+
+    /* =====================================================
+       COLLISION DETECTION
+    ===================================================== */
+
+    function checkCollision(
+        object
+    ) {
+
+        const playerLeft =
+            playerX;
+
+
+        const playerRight =
+            playerX +
+            player.offsetWidth;
+
+
+        const playerTop =
+            gameArea.clientHeight -
+            player.offsetHeight -
+            25;
+
+
+        const playerBottom =
+            playerTop +
+            player.offsetHeight;
+
+
+        const objectLeft =
+            object.x;
+
+
+        const objectRight =
+            object.x + 50;
+
+
+        const objectTop =
+            object.y;
+
+
+        const objectBottom =
+            object.y + 50;
+
+
+        /*
+            Rectangle collision.
+        */
+
+        return (
+
+            playerRight >
+            objectLeft &&
+
+            playerLeft <
+            objectRight &&
+
+            playerBottom >
+            objectTop &&
+
+            playerTop <
+            objectBottom
+
+        );
+
+    }
+
+
+    /* =====================================================
+       HANDLE COLLISION
+    ===================================================== */
+
+    function handleCollision(
+        index
+    ) {
+
+        const object =
+            objects[index];
+
+
+        const rect =
+            object.element
+                .getBoundingClientRect();
+
+
+        const areaRect =
+            gameArea
+                .getBoundingClientRect();
+
+
+        const x =
+            rect.left -
+            areaRect.left +
+            25;
+
+
+        const y =
+            rect.top -
+            areaRect.top +
+            25;
+
+
+        /* =====================================
+           STAR
+        ====================================== */
+
+        if (
+            object.type === "star"
+        ) {
+
+            score += 50;
+
+
+            showPopup(
+                x,
+                y,
+                "⭐ +50"
+            );
+
+
+            createParticles(
+                x,
+                y
+            );
+
+        }
+
+
+        /* =====================================
+           SHIELD
+        ====================================== */
+
+        else if (
+            object.type === "shield"
+        ) {
+
+            player.classList.add(
+                "shield"
+            );
+
+
+            showPopup(
+                x,
+                y,
+                "🛡️ SHIELD!"
+            );
+
+
+            /*
+                Shield aktif selama
+                5 detik.
+            */
+
+            setTimeout(
+                function() {
+
+                    player.classList.remove(
+                        "shield"
+                    );
+
+                },
+                5000
+            );
+
+        }
+
+
+        /* =====================================
+           METEOR
+        ====================================== */
+
+        else if (
+            object.type === "meteor"
+        ) {
+
+            /*
+                Kalau punya shield,
+                tidak kehilangan nyawa.
+            */
+
+            if (
+                player.classList.contains(
+                    "shield"
+                )
+            ) {
+
+                showPopup(
+                    x,
+                    y,
+                    "🛡️ BLOCKED!"
+                );
+
+
+                createParticles(
+                    x,
+                    y
+                );
+
+            }
+
+            else {
+
+                lives--;
+
+
+                updateLives();
+
+
+                score = Math.max(
+                    0,
+                    score - 25
+                );
+
+
+                showPopup(
+                    x,
+                    y,
+                    "💥 -25"
+                );
+
+
+                createParticles(
+                    x,
+                    y
+                );
+
+
+                /*
+                    Kalau lives habis.
+                */
+
+                if (
+                    lives <= 0
+                ) {
+
+                    endGame();
+
+                }
+
+            }
+
+        }
+
+
+        /*
+            Update score.
+        */
+
+        scoreElement.textContent =
+            score;
+
+
+        /*
+            Hapus object.
+        */
+
+        removeObject(index);
+
+    }
+
+
+    /* =====================================================
+       REMOVE OBJECT
+    ===================================================== */
+
+    function removeObject(
+        index
+    ) {
+
+        const object =
+            objects[index];
+
+
+        if (
+            object &&
+            object.element
+        ) {
+
+            object.element.remove();
+
+        }
+
+
+        objects.splice(
+            index,
+            1
+        );
+
+    }
+
+
+    /* =====================================================
+       UPDATE LIVES
+    ===================================================== */
+
+    function updateLives() {
+
+        let text = "";
+
+
+        for (
+            let i = 0;
+            i < 3;
+            i++
+        ) {
+
+            if (
+                i < lives
+            ) {
+
+                text += "❤️";
+
+            }
+
+            else {
+
+                text += "🖤";
+
+            }
+
+        }
+
+
+        livesElement.textContent =
+            text;
+
+    }
+
+
+    /* =====================================================
+       SCORE POPUP
+    ===================================================== */
+
+    function showPopup(
+        x,
+        y,
+        text
+    ) {
+
+        const popup =
+            document.createElement(
+                "div"
+            );
+
+
+        popup.className =
+            "popup";
+
+
+        popup.textContent =
+            text;
+
+
+        popup.style.left =
+            x + "px";
+
+
+        popup.style.top =
+            y + "px";
+
+
+        gameArea.appendChild(
+            popup
+        );
+
+
+        setTimeout(
+            function() {
+
+                popup.remove();
+
+            },
+            900
+        );
+
+    }
+
+
+    /* =====================================================
+       PARTICLES
+    ===================================================== */
+
+    function createParticles(
+        x,
+        y
+    ) {
+
+        for (
+            let i = 0;
+            i < 15;
+            i++
+        ) {
+
+            const particle =
+                document.createElement(
+                    "div"
+                );
+
+
+            particle.className =
+                "particle";
+
+
+            particle.style.left =
+                x + "px";
+
+
+            particle.style.top =
+                y + "px";
+
+
+            /*
+                Random angle.
+            */
+
+            const angle =
+                Math.random() *
+                Math.PI *
+                2;
+
+
+            /*
+                Random distance.
+            */
+
+            const distance =
+                30 +
+                Math.random() *
+                90;
+
+
+            const moveX =
+                Math.cos(angle) *
+                distance;
+
+
+            const moveY =
+                Math.sin(angle) *
+                distance;
+
+
+            particle.style.setProperty(
+                "--x",
+                moveX + "px"
+            );
+
+
+            particle.style.setProperty(
+                "--y",
+                moveY + "px"
+            );
+
+
+            gameArea.appendChild(
+                particle
+            );
+
+
+            setTimeout(
+                function() {
+
+                    particle.remove();
+
+                },
+                700
+            );
+
+        }
+
+    }
+
+
+    /* =====================================================
+       LEVEL UP
+    ===================================================== */
+
+    function showLevelUp() {
+
+        const text =
+            document.createElement(
+                "div"
+            );
+
+
+        text.className =
+            "level-up";
+
+
+        text.textContent =
+            `LEVEL ${level}!`;
+
+
+        gameArea.appendChild(
+            text
+        );
+
+
+        setTimeout(
+            function() {
+
+                text.remove();
+
+            },
+            1200
+        );
+
+    }
+
+
+    /* =====================================================
+       END GAME
+    ===================================================== */
+
+    function endGame() {
+
+        if (!gameRunning) {
+
+            return;
+
+        }
+
+
+        gameRunning = false;
+
+
+        /*
+            Stop timer.
+        */
+
+        clearInterval(
+            timer
+        );
+
+
+        /*
+            Stop spawning.
+        */
+
+        clearInterval(
+            spawnTimer
+        );
+
+
+        /*
+            Stop game loop.
+        */
+
+        cancelAnimationFrame(
+            animationFrame
+        );
+
+
+        /*
+            Remove objects.
+        */
+
+        objects.forEach(
+            function(object) {
+
+                object.element.remove();
+
+            }
+        );
+
+
+        objects = [];
+
+
+        /*
+            Update best score.
+        */
+
+        if (
+            score > bestScore
+        ) {
+
+            bestScore =
+                score;
+
+
+            localStorage.setItem(
+                "meteorBestScore",
+                bestScore
+            );
+
+        }
+
+
+        bestElement.textContent =
+            bestScore;
+
+
+        /*
+            Tampilkan hasil.
+        */
+
+        message.style.display =
+            "block";
+
+
+        message.innerHTML = `
+
+            <h2>
+                ${
+                    score >= 500
+                    ? "🏆 LEGENDARY!"
+                    : "💥 GAME OVER!"
+                }
+            </h2>
+
+            <p>
+
+                Final Score:
+                <strong>
+                    ${score}
+                </strong>
+
+                <br>
+
+                Survived:
+                <strong>
+                    ${survivalTime}
+                </strong>
+                seconds
+
+                <br>
+
+                Level:
+                <strong>
+                    ${level}
+                </strong>
+
+                <br>
+
+                Best Score:
+                <strong>
+                    ${bestScore}
+                </strong>
+
+            </p>
+
+            <button id="restartButton">
+
+                PLAY AGAIN
+
+            </button>
+
+        `;
+
+
+        /*
+            Restart button.
+        */
+
+        document
+            .getElementById(
+                "restartButton"
+            )
+            .addEventListener(
+                "click",
+                startGame
+            );
+
+    }
+
+</script>
+
+</body>
+
+</html>
