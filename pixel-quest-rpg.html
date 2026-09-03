@@ -1,0 +1,3055 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Pixel Quest RPG</title>
+
+    <!-- =========================================================
+         GOOGLE FONT
+    ========================================================== -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;700;800&display=swap"
+        rel="stylesheet">
+
+
+    <style>
+
+        /* =========================================================
+           1. COLOR
+        ========================================================== */
+
+        :root {
+            --bg: #1B1035;
+            --panel: #2A1B54;
+            --panel-soft: #362268;
+
+            --accent: #FFD23F;
+            --accent-dark: #EABF20;
+
+            --correct: #4ADE80;
+            --wrong: #FB6F92;
+
+            --blue: #60A5FA;
+            --purple: #A78BFA;
+
+            --text: #F5F3FF;
+            --text-soft: #C9C2E8;
+
+            --display: "Fredoka", sans-serif;
+            --body: "Nunito", sans-serif;
+        }
+
+
+        /* =========================================================
+           2. RESET
+        ========================================================== */
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+
+            display: flex;
+            justify-content: center;
+            align-items: center;
+
+            padding: 20px;
+
+            background:
+                radial-gradient(circle at top, #382267 0%, var(--bg) 45%);
+
+            color: var(--text);
+
+            font-family: var(--body);
+        }
+
+
+        /* =========================================================
+           3. GAME CONTAINER
+        ========================================================== */
+
+        .game {
+            width: 100%;
+            max-width: 440px;
+        }
+
+
+        /* =========================================================
+           4. SCREEN
+        ========================================================== */
+
+        .layar {
+            display: none;
+        }
+
+        .layar.aktif {
+            display: block;
+        }
+
+
+        /* =========================================================
+           5. PANEL
+        ========================================================== */
+
+        .panel {
+            background: var(--panel);
+
+            border: 2px solid rgba(255, 255, 255, 0.08);
+
+            border-radius: 26px;
+
+            padding: 24px;
+
+            box-shadow:
+                0 20px 50px rgba(0, 0, 0, 0.35);
+        }
+
+
+        /* =========================================================
+           6. START SCREEN
+        ========================================================== */
+
+        .logo {
+            width: 90px;
+            height: 90px;
+
+            margin: 0 auto 18px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            background: var(--accent);
+
+            border-radius: 28px;
+
+            font-size: 46px;
+
+            box-shadow:
+                0 10px 0 var(--accent-dark);
+        }
+
+        h1 {
+            margin: 0;
+
+            text-align: center;
+
+            font-family: var(--display);
+            font-size: 38px;
+            font-weight: 700;
+
+            color: var(--accent);
+        }
+
+        .subtitle {
+            margin: 8px 0 22px;
+
+            text-align: center;
+
+            color: var(--text-soft);
+
+            line-height: 1.5;
+        }
+
+
+        /* =========================================================
+           7. INPUT
+        ========================================================== */
+
+        .input-label {
+            display: block;
+
+            margin-bottom: 8px;
+
+            font-weight: 800;
+        }
+
+        input {
+            width: 100%;
+
+            padding: 14px 16px;
+
+            border: 2px solid transparent;
+
+            border-radius: 14px;
+
+            background: var(--panel-soft);
+
+            color: var(--text);
+
+            font-family: var(--body);
+            font-size: 16px;
+
+            outline: none;
+        }
+
+        input:focus {
+            border-color: var(--accent);
+        }
+
+
+        /* =========================================================
+           8. BUTTON
+        ========================================================== */
+
+        button {
+            border: 0;
+
+            border-radius: 14px;
+
+            padding: 13px 18px;
+
+            font-family: var(--body);
+            font-size: 15px;
+            font-weight: 800;
+
+            cursor: pointer;
+
+            transition: 0.15s;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+        }
+
+        button:active {
+            transform: translateY(1px);
+        }
+
+        .btn-primary {
+            width: 100%;
+
+            margin-top: 18px;
+
+            background: var(--accent);
+
+            color: #25183F;
+
+            box-shadow:
+                0 5px 0 var(--accent-dark);
+        }
+
+        .btn-secondary {
+            background: var(--panel-soft);
+            color: var(--text);
+        }
+
+
+        /* =========================================================
+           9. FEATURES
+        ========================================================== */
+
+        .features {
+            display: grid;
+
+            grid-template-columns: repeat(3, 1fr);
+
+            gap: 8px;
+
+            margin-top: 22px;
+        }
+
+        .feature {
+            padding: 12px 6px;
+
+            background: var(--panel-soft);
+
+            border-radius: 14px;
+
+            text-align: center;
+
+            font-size: 12px;
+            font-weight: 800;
+        }
+
+        .feature-icon {
+            display: block;
+
+            font-size: 23px;
+
+            margin-bottom: 5px;
+        }
+
+
+        /* =========================================================
+           10. GAME HUD
+        ========================================================== */
+
+        .hud {
+            display: grid;
+
+            grid-template-columns: 1.2fr 1fr 1fr;
+
+            gap: 8px;
+
+            margin-bottom: 10px;
+        }
+
+        .hud-card {
+            background: var(--panel);
+
+            border-radius: 14px;
+
+            padding: 9px 10px;
+
+            border: 1px solid rgba(255, 255, 255, 0.07);
+        }
+
+        .hud-label {
+            display: block;
+
+            font-size: 10px;
+
+            color: var(--text-soft);
+
+            text-transform: uppercase;
+
+            letter-spacing: 0.5px;
+        }
+
+        .hud-value {
+            display: block;
+
+            margin-top: 2px;
+
+            font-family: var(--display);
+
+            font-size: 17px;
+        }
+
+
+        /* =========================================================
+           11. GAME AREA
+        ========================================================== */
+
+        .game-box {
+            padding: 8px;
+
+            background: var(--panel);
+
+            border-radius: 22px;
+
+            border: 2px solid rgba(255, 255, 255, 0.08);
+        }
+
+        canvas {
+            width: 100%;
+            height: auto;
+
+            display: block;
+
+            border-radius: 16px;
+
+            background: #241746;
+        }
+
+
+        /* =========================================================
+           12. OBJECTIVE
+        ========================================================== */
+
+        .objective {
+            margin-top: 10px;
+
+            padding: 11px 14px;
+
+            border-radius: 14px;
+
+            background: var(--panel);
+
+            color: var(--text-soft);
+
+            font-size: 13px;
+
+            text-align: center;
+        }
+
+
+        /* =========================================================
+           13. MOBILE CONTROLS
+        ========================================================== */
+
+        .controls {
+            display: grid;
+
+            grid-template-columns: repeat(3, 1fr);
+
+            gap: 8px;
+
+            margin-top: 10px;
+        }
+
+        .control-btn {
+            height: 48px;
+
+            background: var(--panel);
+
+            color: var(--text);
+
+            border: 2px solid rgba(255, 255, 255, 0.08);
+
+            font-size: 20px;
+
+            touch-action: none;
+            user-select: none;
+        }
+
+        .control-btn:nth-child(2) {
+            background: var(--accent);
+            color: #25183F;
+        }
+
+
+        /* =========================================================
+           14. BATTLE SCREEN
+        ========================================================== */
+
+        .battle-header {
+            text-align: center;
+
+            margin-bottom: 15px;
+        }
+
+        .battle-title {
+            margin: 0;
+
+            font-family: var(--display);
+
+            font-size: 28px;
+
+            color: var(--accent);
+        }
+
+        .battle-subtitle {
+            margin: 4px 0 0;
+
+            color: var(--text-soft);
+
+            font-size: 13px;
+        }
+
+
+        .battle-stage {
+            position: relative;
+
+            min-height: 245px;
+
+            overflow: hidden;
+
+            border-radius: 20px;
+
+            background:
+                linear-gradient(
+                    180deg,
+                    #34205E 0%,
+                    #241746 70%,
+                    #1D123A 100%
+                );
+
+            border: 2px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .battle-stage::after {
+            content: "";
+
+            position: absolute;
+
+            left: 8%;
+            right: 8%;
+            bottom: 20px;
+
+            height: 35px;
+
+            border-radius: 50%;
+
+            background: rgba(0, 0, 0, 0.25);
+        }
+
+        .monster-display {
+            position: absolute;
+
+            left: 50%;
+            top: 38%;
+
+            transform: translate(-50%, -50%);
+
+            font-size: 90px;
+
+            z-index: 2;
+
+            animation: floatMonster 1.5s infinite ease-in-out;
+        }
+
+        @keyframes floatMonster {
+            0%, 100% {
+                transform: translate(-50%, -50%) translateY(0);
+            }
+
+            50% {
+                transform: translate(-50%, -50%) translateY(-8px);
+            }
+        }
+
+
+        /* =========================================================
+           15. HEALTH BAR
+        ========================================================== */
+
+        .health-wrap {
+            position: absolute;
+
+            z-index: 5;
+
+            left: 15px;
+            right: 15px;
+
+            top: 15px;
+        }
+
+        .health-info {
+            display: flex;
+
+            justify-content: space-between;
+
+            margin-bottom: 5px;
+
+            font-size: 12px;
+
+            font-weight: 800;
+        }
+
+        .health-bar {
+            height: 12px;
+
+            background: #1A102E;
+
+            border-radius: 20px;
+
+            overflow: hidden;
+        }
+
+        .health-fill {
+            height: 100%;
+
+            background: var(--wrong);
+
+            border-radius: 20px;
+
+            transition: width 0.25s;
+        }
+
+
+        /* =========================================================
+           16. PLAYER BATTLE INFO
+        ========================================================== */
+
+        .player-battle {
+            display: flex;
+
+            justify-content: space-between;
+
+            gap: 10px;
+
+            margin-top: 10px;
+        }
+
+        .player-stat {
+            flex: 1;
+
+            padding: 12px;
+
+            background: var(--panel-soft);
+
+            border-radius: 14px;
+
+            text-align: center;
+        }
+
+        .player-stat span {
+            display: block;
+
+            color: var(--text-soft);
+
+            font-size: 11px;
+        }
+
+        .player-stat strong {
+            display: block;
+
+            margin-top: 2px;
+
+            font-family: var(--display);
+
+            font-size: 20px;
+        }
+
+
+        /* =========================================================
+           17. BATTLE ACTION
+        ========================================================== */
+
+        .battle-actions {
+            display: grid;
+
+            grid-template-columns: 1fr 1fr;
+
+            gap: 8px;
+
+            margin-top: 10px;
+        }
+
+        .attack {
+            background: var(--accent);
+            color: #25183F;
+        }
+
+        .skill {
+            background: var(--purple);
+            color: #20163A;
+        }
+
+        .potion {
+            background: var(--correct);
+            color: #102D1B;
+        }
+
+        .run {
+            background: var(--panel-soft);
+            color: var(--text);
+        }
+
+
+        /* =========================================================
+           18. BATTLE LOG
+        ========================================================== */
+
+        .battle-log {
+            margin-top: 10px;
+
+            padding: 12px;
+
+            min-height: 44px;
+
+            background: var(--panel);
+
+            border-radius: 14px;
+
+            color: var(--text-soft);
+
+            text-align: center;
+
+            font-size: 13px;
+        }
+
+
+        /* =========================================================
+           19. RESULT
+        ========================================================== */
+
+        .result-icon {
+            width: 90px;
+            height: 90px;
+
+            margin: 0 auto 15px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            border-radius: 28px;
+
+            background: var(--accent);
+
+            font-size: 48px;
+        }
+
+        .result-score {
+            margin: 18px 0;
+
+            text-align: center;
+        }
+
+        .result-score span {
+            display: block;
+
+            color: var(--text-soft);
+        }
+
+        .result-score strong {
+            display: block;
+
+            margin-top: 5px;
+
+            color: var(--accent);
+
+            font-family: var(--display);
+
+            font-size: 44px;
+        }
+
+        .result-message {
+            text-align: center;
+
+            color: var(--text-soft);
+
+            line-height: 1.5;
+        }
+
+
+        /* =========================================================
+           20. FOOTER
+        ========================================================== */
+
+        footer {
+            margin-top: 14px;
+
+            text-align: center;
+
+            color: #8F87B4;
+
+            font-size: 11px;
+        }
+
+
+        /* =========================================================
+           21. ANIMATION
+        ========================================================== */
+
+        .shake {
+            animation: shake 0.3s;
+        }
+
+        @keyframes shake {
+            0%, 100% {
+                transform: translateX(0);
+            }
+
+            25% {
+                transform: translateX(-8px);
+            }
+
+            75% {
+                transform: translateX(8px);
+            }
+        }
+
+    </style>
+</head>
+
+
+<body>
+
+<div class="game">
+
+
+    <!-- =========================================================
+         SCREEN 1
+         START
+    ========================================================== -->
+
+    <section id="layarMulai" class="layar aktif">
+
+        <div class="panel">
+
+            <div class="logo">
+                🗡️
+            </div>
+
+            <h1>Pixel Quest</h1>
+
+            <p class="subtitle">
+                Jelajahi dunia, kalahkan monster,
+                kumpulkan XP, dan jadilah pahlawan!
+            </p>
+
+
+            <label class="input-label">
+                Nama Pahlawan
+            </label>
+
+            <input
+                id="namaInput"
+                type="text"
+                maxlength="15"
+                placeholder="Masukkan nama kamu..."
+            >
+
+
+            <button
+                id="mulaiBtn"
+                class="btn-primary"
+            >
+                MULAI PETUALANGAN
+            </button>
+
+
+            <div class="features">
+
+                <div class="feature">
+                    <span class="feature-icon">🗺️</span>
+                    Jelajah
+                </div>
+
+                <div class="feature">
+                    <span class="feature-icon">⚔️</span>
+                    Battle
+                </div>
+
+                <div class="feature">
+                    <span class="feature-icon">⭐</span>
+                    Level Up
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+
+    <!-- =========================================================
+         SCREEN 2
+         EXPLORE
+    ========================================================== -->
+
+    <section id="layarGame" class="layar">
+
+        <div class="hud">
+
+            <div class="hud-card">
+
+                <span class="hud-label">
+                    Hero
+                </span>
+
+                <span
+                    id="hudNama"
+                    class="hud-value"
+                >
+                    Hero
+                </span>
+
+            </div>
+
+
+            <div class="hud-card">
+
+                <span class="hud-label">
+                    Level
+                </span>
+
+                <span
+                    id="hudLevel"
+                    class="hud-value"
+                >
+                    1
+                </span>
+
+            </div>
+
+
+            <div class="hud-card">
+
+                <span class="hud-label">
+                    Gold
+                </span>
+
+                <span
+                    id="hudGold"
+                    class="hud-value"
+                >
+                    0
+                </span>
+
+            </div>
+
+        </div>
+
+
+        <div class="game-box">
+
+            <canvas
+                id="gameCanvas"
+                width="400"
+                height="500"
+            ></canvas>
+
+        </div>
+
+
+        <div class="objective">
+            🗺️ Jelajahi map dan dekati monster untuk memulai battle.
+        </div>
+
+
+        <!-- Mobile Controls -->
+
+        <div class="controls">
+
+            <button
+                class="control-btn"
+                id="leftBtn"
+            >
+                ◀
+            </button>
+
+            <button
+                class="control-btn"
+                id="upBtn"
+            >
+                ▲
+            </button>
+
+            <button
+                class="control-btn"
+                id="rightBtn"
+            >
+                ▶
+            </button>
+
+        </div>
+
+    </section>
+
+
+
+    <!-- =========================================================
+         SCREEN 3
+         BATTLE
+    ========================================================== -->
+
+    <section id="layarBattle" class="layar">
+
+        <div class="panel">
+
+            <div class="battle-header">
+
+                <h2
+                    id="battleTitle"
+                    class="battle-title"
+                >
+                    Battle!
+                </h2>
+
+                <p class="battle-subtitle">
+                    Gunakan strategi untuk mengalahkan monster.
+                </p>
+
+            </div>
+
+
+            <div class="battle-stage">
+
+                <div class="health-wrap">
+
+                    <div class="health-info">
+
+                        <span id="monsterName">
+                            Monster
+                        </span>
+
+                        <span id="monsterHPText">
+                            100 / 100
+                        </span>
+
+                    </div>
+
+                    <div class="health-bar">
+
+                        <div
+                            id="monsterHP"
+                            class="health-fill"
+                            style="width: 100%;"
+                        ></div>
+
+                    </div>
+
+                </div>
+
+
+                <div
+                    id="monsterDisplay"
+                    class="monster-display"
+                >
+                    👾
+                </div>
+
+            </div>
+
+
+            <div class="player-battle">
+
+                <div class="player-stat">
+
+                    <span>
+                        HP
+                    </span>
+
+                    <strong id="playerHPText">
+                        100
+                    </strong>
+
+                </div>
+
+
+                <div class="player-stat">
+
+                    <span>
+                        Mana
+                    </span>
+
+                    <strong id="playerManaText">
+                        50
+                    </strong>
+
+                </div>
+
+
+                <div class="player-stat">
+
+                    <span>
+                        Level
+                    </span>
+
+                    <strong id="battleLevel">
+                        1
+                    </strong>
+
+                </div>
+
+            </div>
+
+
+            <div class="battle-actions">
+
+                <button
+                    id="attackBtn"
+                    class="attack"
+                >
+                    ⚔️ Serang
+                </button>
+
+                <button
+                    id="skillBtn"
+                    class="skill"
+                >
+                    ✨ Skill
+                </button>
+
+                <button
+                    id="potionBtn"
+                    class="potion"
+                >
+                    🧪 Potion
+                </button>
+
+                <button
+                    id="runBtn"
+                    class="run"
+                >
+                    🏃 Kabur
+                </button>
+
+            </div>
+
+
+            <div
+                id="battleLog"
+                class="battle-log"
+            >
+                Apa yang akan kamu lakukan?
+            </div>
+
+        </div>
+
+    </section>
+
+
+
+    <!-- =========================================================
+         SCREEN 4
+         RESULT
+    ========================================================== -->
+
+    <section id="layarHasil" class="layar">
+
+        <div class="panel">
+
+            <div
+                id="resultIcon"
+                class="result-icon"
+            >
+                🏆
+            </div>
+
+
+            <h1 id="resultTitle">
+                Petualangan Selesai!
+            </h1>
+
+
+            <div class="result-score">
+
+                <span>
+                    Total Gold
+                </span>
+
+                <strong id="resultGold">
+                    0
+                </strong>
+
+            </div>
+
+
+            <p
+                id="resultMessage"
+                class="result-message"
+            >
+                Petualanganmu selesai.
+            </p>
+
+
+            <button
+                id="mainLagiBtn"
+                class="btn-primary"
+            >
+                MAIN LAGI
+            </button>
+
+        </div>
+
+    </section>
+
+
+    <footer>
+        Dibuat untuk belajar JavaScript
+    </footer>
+
+</div>
+
+
+
+<script>
+
+    /* ============================================================
+       1. CANVAS
+    ============================================================ */
+
+    const canvas = document.getElementById("gameCanvas");
+    const ctx = canvas.getContext("2d");
+
+
+    /* ============================================================
+       2. SCREEN
+    ============================================================ */
+
+    const layarMulai = document.getElementById("layarMulai");
+    const layarGame = document.getElementById("layarGame");
+    const layarBattle = document.getElementById("layarBattle");
+    const layarHasil = document.getElementById("layarHasil");
+
+
+    function tampilkanLayar(layar) {
+
+        document.querySelectorAll(".layar")
+            .forEach(item => {
+                item.classList.remove("aktif");
+            });
+
+        layar.classList.add("aktif");
+    }
+
+
+    /* ============================================================
+       3. GAME STATE
+    ============================================================ */
+
+    const game = {
+
+        running: false,
+
+        playerName: "Hero",
+
+        level: 1,
+
+        xp: 0,
+
+        gold: 0,
+
+        defeated: 0,
+
+        bossDefeated: false,
+
+        battle: false
+
+    };
+
+
+    /* ============================================================
+       4. PLAYER
+    ============================================================ */
+
+    const player = {
+
+        x: 70,
+
+        y: 380,
+
+        width: 28,
+
+        height: 28,
+
+        speed: 3.5
+
+    };
+
+
+    /* ============================================================
+       5. INPUT
+    ============================================================ */
+
+    const keys = {
+
+        left: false,
+
+        right: false,
+
+        up: false,
+
+        down: false
+
+    };
+
+
+    document.addEventListener("keydown", function(event) {
+
+        if (event.key === "ArrowLeft" || event.key.toLowerCase() === "a") {
+            keys.left = true;
+        }
+
+        if (event.key === "ArrowRight" || event.key.toLowerCase() === "d") {
+            keys.right = true;
+        }
+
+        if (event.key === "ArrowUp" || event.key.toLowerCase() === "w") {
+            keys.up = true;
+        }
+
+        if (event.key === "ArrowDown" || event.key.toLowerCase() === "s") {
+            keys.down = true;
+        }
+
+    });
+
+
+    document.addEventListener("keyup", function(event) {
+
+        if (event.key === "ArrowLeft" || event.key.toLowerCase() === "a") {
+            keys.left = false;
+        }
+
+        if (event.key === "ArrowRight" || event.key.toLowerCase() === "d") {
+            keys.right = false;
+        }
+
+        if (event.key === "ArrowUp" || event.key.toLowerCase() === "w") {
+            keys.up = false;
+        }
+
+        if (event.key === "ArrowDown" || event.key.toLowerCase() === "s") {
+            keys.down = false;
+        }
+
+    });
+
+
+    /* ============================================================
+       6. MOBILE CONTROLS
+    ============================================================ */
+
+    function holdButton(button, keyName) {
+
+        button.addEventListener("pointerdown", function(event) {
+
+            event.preventDefault();
+
+            keys[keyName] = true;
+
+        });
+
+
+        button.addEventListener("pointerup", function(event) {
+
+            event.preventDefault();
+
+            keys[keyName] = false;
+
+        });
+
+
+        button.addEventListener("pointerleave", function() {
+
+            keys[keyName] = false;
+
+        });
+
+    }
+
+
+    holdButton(
+        document.getElementById("leftBtn"),
+        "left"
+    );
+
+    holdButton(
+        document.getElementById("rightBtn"),
+        "right"
+    );
+
+    holdButton(
+        document.getElementById("upBtn"),
+        "up"
+    );
+
+
+    /* ============================================================
+       7. MAP
+    ============================================================ */
+
+    const map = {
+
+        width: 400,
+
+        height: 500,
+
+        walls: [
+
+            // Rumah
+            {
+                x: 25,
+                y: 60,
+                width: 110,
+                height: 90
+            },
+
+            // Pohon / area
+            {
+                x: 275,
+                y: 55,
+                width: 100,
+                height: 110
+            },
+
+            // Batu
+            {
+                x: 155,
+                y: 175,
+                width: 90,
+                height: 55
+            },
+
+            // Danau
+            {
+                x: 20,
+                y: 270,
+                width: 100,
+                height: 100
+            },
+
+            // Batu bawah
+            {
+                x: 275,
+                y: 320,
+                width: 100,
+                height: 75
+            }
+
+        ]
+
+    };
+
+
+    /* ============================================================
+       8. MONSTERS
+    ============================================================ */
+
+    let monsters = [
+
+        {
+            id: 1,
+
+            x: 205,
+            y: 90,
+
+            size: 34,
+
+            emoji: "👾",
+
+            name: "Slime",
+
+            hp: 35,
+
+            maxHP: 35,
+
+            attack: 7,
+
+            xp: 20,
+
+            gold: 10,
+
+            boss: false,
+
+            alive: true
+        },
+
+
+        {
+            id: 2,
+
+            x: 170,
+            y: 345,
+
+            size: 36,
+
+            emoji: "👹",
+
+            name: "Goblin",
+
+            hp: 55,
+
+            maxHP: 55,
+
+            attack: 10,
+
+            xp: 35,
+
+            gold: 20,
+
+            boss: false,
+
+            alive: true
+        },
+
+
+        {
+            id: 3,
+
+            x: 320,
+            y: 215,
+
+            size: 38,
+
+            emoji: "🐺",
+
+            name: "Wolf",
+
+            hp: 70,
+
+            maxHP: 70,
+
+            attack: 12,
+
+            xp: 50,
+
+            gold: 30,
+
+            boss: false,
+
+            alive: true
+        },
+
+
+        {
+            id: 4,
+
+            x: 325,
+            y: 430,
+
+            size: 55,
+
+            emoji: "🐉",
+
+            name: "Dragon Boss",
+
+            hp: 180,
+
+            maxHP: 180,
+
+            attack: 20,
+
+            xp: 150,
+
+            gold: 150,
+
+            boss: true,
+
+            alive: true
+        }
+
+    ];
+
+
+    /* ============================================================
+       9. CURRENT BATTLE
+    ============================================================ */
+
+    let currentMonster = null;
+
+    let playerBattle = {
+
+        hp: 100,
+
+        maxHP: 100,
+
+        mana: 50,
+
+        maxMana: 50,
+
+        potion: 3
+
+    };
+
+
+    /* ============================================================
+       10. COLLISION
+    ============================================================ */
+
+    function collision(a, b) {
+
+        return (
+
+            a.x < b.x + b.width &&
+
+            a.x + a.width > b.x &&
+
+            a.y < b.y + b.height &&
+
+            a.y + a.height > b.y
+
+        );
+
+    }
+
+
+    /* ============================================================
+       11. CAN PLAYER MOVE?
+    ============================================================ */
+
+    function canMove(newX, newY) {
+
+        const testPlayer = {
+
+            x: newX,
+
+            y: newY,
+
+            width: player.width,
+
+            height: player.height
+
+        };
+
+
+        // Batas map
+
+        if (newX < 5) return false;
+
+        if (newY < 5) return false;
+
+        if (newX + player.width > canvas.width - 5) return false;
+
+        if (newY + player.height > canvas.height - 5) return false;
+
+
+        // Tabrakan dengan objek map
+
+        for (const wall of map.walls) {
+
+            if (collision(testPlayer, wall)) {
+
+                return false;
+
+            }
+
+        }
+
+
+        return true;
+
+    }
+
+
+    /* ============================================================
+       12. UPDATE PLAYER
+    ============================================================ */
+
+    function updatePlayer() {
+
+        let newX = player.x;
+        let newY = player.y;
+
+
+        if (keys.left) {
+            newX -= player.speed;
+        }
+
+        if (keys.right) {
+            newX += player.speed;
+        }
+
+        if (keys.up) {
+            newY -= player.speed;
+        }
+
+        if (keys.down) {
+            newY += player.speed;
+        }
+
+
+        if (canMove(newX, player.y)) {
+            player.x = newX;
+        }
+
+
+        if (canMove(player.x, newY)) {
+            player.y = newY;
+        }
+
+
+        checkMonsterCollision();
+
+    }
+
+
+    /* ============================================================
+       13. CHECK MONSTER COLLISION
+    ============================================================ */
+
+    function checkMonsterCollision() {
+
+        if (game.battle) return;
+
+
+        for (const monster of monsters) {
+
+            if (!monster.alive) continue;
+
+
+            const monsterBox = {
+
+                x: monster.x,
+
+                y: monster.y,
+
+                width: monster.size,
+
+                height: monster.size
+
+            };
+
+
+            if (collision(player, monsterBox)) {
+
+                startBattle(monster);
+
+                break;
+
+            }
+
+        }
+
+    }
+
+
+    /* ============================================================
+       14. START BATTLE
+    ============================================================ */
+
+    function startBattle(monster) {
+
+        game.battle = true;
+
+        currentMonster = monster;
+
+
+        // Reset player battle
+
+        playerBattle.hp = playerBattle.maxHP;
+
+        playerBattle.mana = playerBattle.maxMana;
+
+
+        document.getElementById("battleTitle")
+            .textContent = monster.boss
+                ? "⚠️ BOSS BATTLE!"
+                : "⚔️ Battle!";
+
+
+        document.getElementById("monsterName")
+            .textContent = monster.name;
+
+
+        document.getElementById("monsterDisplay")
+            .textContent = monster.emoji;
+
+
+        updateBattleUI();
+
+
+        document.getElementById("battleLog")
+            .textContent =
+                monster.boss
+                    ? "Hati-hati! Ini adalah Boss!"
+                    : "Monster muncul! Pilih aksi kamu.";
+
+
+        tampilkanLayar(layarBattle);
+
+    }
+
+
+    /* ============================================================
+       15. UPDATE BATTLE UI
+    ============================================================ */
+
+    function updateBattleUI() {
+
+        if (!currentMonster) return;
+
+
+        const hpPercent =
+            Math.max(
+                0,
+                (currentMonster.hp / currentMonster.maxHP) * 100
+            );
+
+
+        document.getElementById("monsterHP")
+            .style.width = hpPercent + "%";
+
+
+        document.getElementById("monsterHPText")
+            .textContent =
+                `${Math.max(0, currentMonster.hp)} / ${currentMonster.maxHP}`;
+
+
+        document.getElementById("playerHPText")
+            .textContent =
+                playerBattle.hp;
+
+
+        document.getElementById("playerManaText")
+            .textContent =
+                playerBattle.mana;
+
+
+        document.getElementById("battleLevel")
+            .textContent =
+                game.level;
+
+
+        document.getElementById("potionBtn")
+            .textContent =
+                `🧪 Potion (${playerBattle.potion})`;
+
+    }
+
+
+    /* ============================================================
+       16. PLAYER ATTACK
+    ============================================================ */
+
+    function playerAttack() {
+
+        if (!currentMonster) return;
+
+
+        const damage =
+            randomNumber(10, 18) +
+            (game.level * 3);
+
+
+        currentMonster.hp -= damage;
+
+
+        document.getElementById("battleLog")
+            .textContent =
+                `⚔️ Kamu menyerang ${currentMonster.name} sebesar ${damage} damage!`;
+
+
+        updateBattleUI();
+
+
+        if (currentMonster.hp <= 0) {
+
+            winBattle();
+
+            return;
+
+        }
+
+
+        setTimeout(monsterAttack, 500);
+
+    }
+
+
+    /* ============================================================
+       17. PLAYER SKILL
+    ============================================================ */
+
+    function playerSkill() {
+
+        if (!currentMonster) return;
+
+
+        if (playerBattle.mana < 15) {
+
+            document.getElementById("battleLog")
+                .textContent =
+                    "Mana kamu tidak cukup!";
+
+            return;
+
+        }
+
+
+        playerBattle.mana -= 15;
+
+
+        const damage =
+            randomNumber(22, 35) +
+            (game.level * 5);
+
+
+        currentMonster.hp -= damage;
+
+
+        document.getElementById("battleLog")
+            .textContent =
+                `✨ POWER BLAST memberikan ${damage} damage!`;
+
+
+        updateBattleUI();
+
+
+        if (currentMonster.hp <= 0) {
+
+            winBattle();
+
+            return;
+
+        }
+
+
+        setTimeout(monsterAttack, 500);
+
+    }
+
+
+    /* ============================================================
+       18. POTION
+    ============================================================ */
+
+    function usePotion() {
+
+        if (playerBattle.potion <= 0) {
+
+            document.getElementById("battleLog")
+                .textContent =
+                    "Potion kamu sudah habis!";
+
+            return;
+
+        }
+
+
+        if (playerBattle.hp >= playerBattle.maxHP) {
+
+            document.getElementById("battleLog")
+                .textContent =
+                    "HP kamu sudah penuh!";
+
+            return;
+
+        }
+
+
+        playerBattle.potion--;
+
+
+        const heal = 30;
+
+
+        playerBattle.hp =
+            Math.min(
+                playerBattle.maxHP,
+                playerBattle.hp + heal
+            );
+
+
+        document.getElementById("battleLog")
+            .textContent =
+                `🧪 Kamu memulihkan ${heal} HP.`;
+
+
+        updateBattleUI();
+
+
+        setTimeout(monsterAttack, 500);
+
+    }
+
+
+    /* ============================================================
+       19. MONSTER ATTACK
+    ============================================================ */
+
+    function monsterAttack() {
+
+        if (!currentMonster) return;
+
+
+        const damage =
+            randomNumber(
+                Math.max(3, currentMonster.attack - 3),
+                currentMonster.attack + 3
+            );
+
+
+        playerBattle.hp -= damage;
+
+
+        document.getElementById("battleLog")
+            .textContent =
+                `💥 ${currentMonster.name} menyerang kamu sebesar ${damage} damage!`;
+
+
+        updateBattleUI();
+
+
+        if (playerBattle.hp <= 0) {
+
+            loseBattle();
+
+        }
+
+    }
+
+
+    /* ============================================================
+       20. RUN FROM BATTLE
+    ============================================================ */
+
+    function runBattle() {
+
+        if (currentMonster.boss) {
+
+            document.getElementById("battleLog")
+                .textContent =
+                    "Boss tidak akan membiarkan kamu kabur!";
+
+            setTimeout(monsterAttack, 500);
+
+            return;
+
+        }
+
+
+        document.getElementById("battleLog")
+            .textContent =
+                "🏃 Kamu berhasil kabur!";
+
+
+        setTimeout(function() {
+
+            game.battle = false;
+
+            currentMonster = null;
+
+            player.x = 70;
+
+            player.y = 380;
+
+            tampilkanLayar(layarGame);
+
+        }, 700);
+
+    }
+
+
+    /* ============================================================
+       21. WIN BATTLE
+    ============================================================ */
+
+    function winBattle() {
+
+        const monster = currentMonster;
+
+
+        monster.alive = false;
+
+
+        game.defeated++;
+
+
+        game.xp += monster.xp;
+
+        game.gold += monster.gold;
+
+
+        if (monster.boss) {
+
+            game.bossDefeated = true;
+
+        }
+
+
+        document.getElementById("battleLog")
+            .textContent =
+                `🏆 ${monster.name} kalah! +${monster.xp} XP +${monster.gold} Gold`;
+
+
+        checkLevelUp();
+
+
+        updateHUD();
+
+
+        setTimeout(function() {
+
+            game.battle = false;
+
+            currentMonster = null;
+
+
+            if (monster.boss) {
+
+                finishGame(true);
+
+                return;
+
+            }
+
+
+            player.x = 70;
+
+            player.y = 380;
+
+
+            tampilkanLayar(layarGame);
+
+        }, 1000);
+
+    }
+
+
+    /* ============================================================
+       22. LOSE BATTLE
+    ============================================================ */
+
+    function loseBattle() {
+
+        document.getElementById("battleLog")
+            .textContent =
+                "💀 HP kamu habis! Petualangan berakhir.";
+
+
+        setTimeout(function() {
+
+            finishGame(false);
+
+        }, 900);
+
+    }
+
+
+    /* ============================================================
+       23. LEVEL UP
+    ============================================================ */
+
+    function checkLevelUp() {
+
+        const requiredXP =
+            game.level * 50;
+
+
+        if (game.xp >= requiredXP) {
+
+            game.xp -= requiredXP;
+
+            game.level++;
+
+
+            playerBattle.maxHP += 20;
+
+            playerBattle.maxMana += 10;
+
+            playerBattle.hp =
+                playerBattle.maxHP;
+
+            playerBattle.mana =
+                playerBattle.maxMana;
+
+
+            playerBattle.potion++;
+
+
+            document.getElementById("battleLog")
+                .textContent =
+                    `🎉 LEVEL UP! Sekarang kamu Level ${game.level}!`;
+
+        }
+
+    }
+
+
+    /* ============================================================
+       24. RANDOM NUMBER
+    ============================================================ */
+
+    function randomNumber(min, max) {
+
+        return Math.floor(
+            Math.random() * (max - min + 1)
+        ) + min;
+
+    }
+
+
+    /* ============================================================
+       25. DRAW BACKGROUND
+    ============================================================ */
+
+    function drawBackground() {
+
+        // Langit
+
+        const gradient =
+            ctx.createLinearGradient(
+                0,
+                0,
+                0,
+                canvas.height
+            );
+
+
+        gradient.addColorStop(
+            0,
+            "#34205E"
+        );
+
+
+        gradient.addColorStop(
+            1,
+            "#1B1035"
+        );
+
+
+        ctx.fillStyle = gradient;
+
+        ctx.fillRect(
+            0,
+            0,
+            canvas.width,
+            canvas.height
+        );
+
+
+        // Bintang
+
+        ctx.fillStyle = "#FFD23F";
+
+
+        const stars = [
+
+            [30, 30],
+            [165, 35],
+            [230, 25],
+            [380, 35],
+            [245, 120],
+            [145, 90],
+            [360, 180],
+            [20, 210]
+
+        ];
+
+
+        stars.forEach(star => {
+
+            ctx.beginPath();
+
+            ctx.arc(
+                star[0],
+                star[1],
+                2,
+                0,
+                Math.PI * 2
+            );
+
+            ctx.fill();
+
+        });
+
+
+        // Rumput
+
+        ctx.fillStyle = "#243C38";
+
+        ctx.fillRect(
+            0,
+            0,
+            canvas.width,
+            canvas.height
+        );
+
+
+        // Pattern rumput
+
+        for (let x = 0; x < canvas.width; x += 25) {
+
+            for (let y = 0; y < canvas.height; y += 25) {
+
+                ctx.fillStyle =
+                    (x + y) % 50 === 0
+                        ? "#29463E"
+                        : "#263F39";
+
+                ctx.fillRect(
+                    x,
+                    y,
+                    23,
+                    23
+                );
+
+            }
+
+        }
+
+    }
+
+
+    /* ============================================================
+       26. DRAW MAP OBJECTS
+    ============================================================ */
+
+    function drawMapObjects() {
+
+        map.walls.forEach((wall, index) => {
+
+            if (index === 0) {
+
+                // Rumah
+
+                ctx.fillStyle = "#6D4FC2";
+
+                ctx.fillRect(
+                    wall.x,
+                    wall.y,
+                    wall.width,
+                    wall.height
+                );
+
+
+                ctx.fillStyle = "#FFD23F";
+
+                ctx.beginPath();
+
+                ctx.moveTo(
+                    wall.x - 8,
+                    wall.y
+                );
+
+                ctx.lineTo(
+                    wall.x + wall.width / 2,
+                    wall.y - 35
+                );
+
+                ctx.lineTo(
+                    wall.x + wall.width + 8,
+                    wall.y
+                );
+
+                ctx.closePath();
+
+                ctx.fill();
+
+
+                // Door
+
+                ctx.fillStyle = "#241746";
+
+                ctx.fillRect(
+                    wall.x + 42,
+                    wall.y + 48,
+                    28,
+                    42
+                );
+
+
+            } else if (index === 1) {
+
+                // Forest
+
+                ctx.fillStyle = "#183E35";
+
+                ctx.fillRect(
+                    wall.x,
+                    wall.y,
+                    wall.width,
+                    wall.height
+                );
+
+
+                for (
+                    let x = wall.x + 15;
+                    x < wall.x + wall.width;
+                    x += 35
+                ) {
+
+                    drawTree(
+                        x,
+                        wall.y + 55
+                    );
+
+                }
+
+
+            } else if (index === 2) {
+
+                // Batu
+
+                ctx.fillStyle = "#6C6290";
+
+                roundRect(
+                    wall.x,
+                    wall.y,
+                    wall.width,
+                    wall.height,
+                    18
+                );
+
+                ctx.fill();
+
+
+            } else if (index === 3) {
+
+                // Danau
+
+                ctx.fillStyle = "#315B83";
+
+                roundRect(
+                    wall.x,
+                    wall.y,
+                    wall.width,
+                    wall.height,
+                    20
+                );
+
+                ctx.fill();
+
+
+                ctx.strokeStyle = "#60A5FA";
+
+                ctx.lineWidth = 2;
+
+
+                for (
+                    let y = wall.y + 20;
+                    y < wall.y + wall.height;
+                    y += 25
+                ) {
+
+                    ctx.beginPath();
+
+                    ctx.moveTo(
+                        wall.x + 15,
+                        y
+                    );
+
+                    ctx.lineTo(
+                        wall.x + 70,
+                        y
+                    );
+
+                    ctx.stroke();
+
+                }
+
+
+            } else {
+
+                // Batu besar
+
+                ctx.fillStyle = "#51496F";
+
+                roundRect(
+                    wall.x,
+                    wall.y,
+                    wall.width,
+                    wall.height,
+                    20
+                );
+
+                ctx.fill();
+
+            }
+
+        });
+
+    }
+
+
+    /* ============================================================
+       27. DRAW TREE
+    ============================================================ */
+
+    function drawTree(x, y) {
+
+        ctx.fillStyle = "#70452D";
+
+        ctx.fillRect(
+            x - 5,
+            y,
+            10,
+            28
+        );
+
+
+        ctx.fillStyle = "#4ADE80";
+
+        ctx.beginPath();
+
+        ctx.arc(
+            x,
+            y - 5,
+            22,
+            0,
+            Math.PI * 2
+        );
+
+        ctx.fill();
+
+
+        ctx.fillStyle = "#68D391";
+
+        ctx.beginPath();
+
+        ctx.arc(
+            x - 8,
+            y - 12,
+            8,
+            0,
+            Math.PI * 2
+        );
+
+        ctx.fill();
+
+    }
+
+
+    /* ============================================================
+       28. DRAW MONSTERS
+    ============================================================ */
+
+    function drawMonsters() {
+
+        monsters.forEach(monster => {
+
+            if (!monster.alive) return;
+
+
+            ctx.font =
+                `${monster.size}px Arial`;
+
+            ctx.textAlign = "center";
+
+            ctx.textBaseline = "middle";
+
+
+            ctx.fillText(
+                monster.emoji,
+                monster.x + monster.size / 2,
+                monster.y + monster.size / 2
+            );
+
+
+            // HP bar
+
+            const barWidth =
+                monster.boss
+                    ? 60
+                    : 42;
+
+
+            const hpPercent =
+                monster.hp / monster.maxHP;
+
+
+            ctx.fillStyle = "#1A102E";
+
+            ctx.fillRect(
+                monster.x + monster.size / 2 - barWidth / 2,
+                monster.y - 8,
+                barWidth,
+                5
+            );
+
+
+            ctx.fillStyle =
+                monster.boss
+                    ? "#FB6F92"
+                    : "#4ADE80";
+
+
+            ctx.fillRect(
+                monster.x + monster.size / 2 - barWidth / 2,
+                monster.y - 8,
+                barWidth * hpPercent,
+                5
+            );
+
+        });
+
+    }
+
+
+    /* ============================================================
+       29. DRAW PLAYER
+    ============================================================ */
+
+    function drawPlayer() {
+
+        const x = player.x;
+
+        const y = player.y;
+
+
+        // Shadow
+
+        ctx.fillStyle =
+            "rgba(0,0,0,0.3)";
+
+
+        ctx.beginPath();
+
+        ctx.ellipse(
+            x + 14,
+            y + 29,
+            15,
+            5,
+            0,
+            0,
+            Math.PI * 2
+        );
+
+        ctx.fill();
+
+
+        // Body
+
+        ctx.fillStyle = "#FFD23F";
+
+        roundRect(
+            x,
+            y,
+            28,
+            28,
+            8
+        );
+
+        ctx.fill();
+
+
+        // Hair
+
+        ctx.fillStyle = "#4C2B20";
+
+        ctx.fillRect(
+            x + 5,
+            y - 4,
+            18,
+            8
+        );
+
+
+        // Eyes
+
+        ctx.fillStyle = "#25183F";
+
+        ctx.beginPath();
+
+        ctx.arc(
+            x + 9,
+            y + 13,
+            2,
+            0,
+            Math.PI * 2
+        );
+
+        ctx.fill();
+
+
+        ctx.beginPath();
+
+        ctx.arc(
+            x + 19,
+            y + 13,
+            2,
+            0,
+            Math.PI * 2
+        );
+
+        ctx.fill();
+
+
+        // Sword
+
+        ctx.strokeStyle = "#F5F3FF";
+
+        ctx.lineWidth = 3;
+
+        ctx.beginPath();
+
+        ctx.moveTo(
+            x + 26,
+            y + 5
+        );
+
+        ctx.lineTo(
+            x + 35,
+            y - 4
+        );
+
+        ctx.stroke();
+
+    }
+
+
+    /* ============================================================
+       30. DRAW LABEL
+    ============================================================ */
+
+    function drawLabels() {
+
+        ctx.font = "700 11px Nunito";
+
+        ctx.textAlign = "center";
+
+        ctx.textBaseline = "bottom";
+
+
+        // Label boss
+
+        monsters.forEach(monster => {
+
+            if (!monster.alive) return;
+
+
+            if (monster.boss) {
+
+                ctx.fillStyle = "#FFD23F";
+
+                ctx.fillText(
+                    "BOSS",
+                    monster.x + monster.size / 2,
+                    monster.y - 13
+                );
+
+            }
+
+        });
+
+    }
+
+
+    /* ============================================================
+       31. ROUND RECT
+    ============================================================ */
+
+    function roundRect(
+        x,
+        y,
+        width,
+        height,
+        radius
+    ) {
+
+        ctx.beginPath();
+
+        ctx.moveTo(
+            x + radius,
+            y
+        );
+
+        ctx.lineTo(
+            x + width - radius,
+            y
+        );
+
+        ctx.quadraticCurveTo(
+            x + width,
+            y,
+            x + width,
+            y + radius
+        );
+
+        ctx.lineTo(
+            x + width,
+            y + height - radius
+        );
+
+        ctx.quadraticCurveTo(
+            x + width,
+            y + height,
+            x + width - radius,
+            y + height
+        );
+
+        ctx.lineTo(
+            x + radius,
+            y + height
+        );
+
+        ctx.quadraticCurveTo(
+            x,
+            y + height,
+            x,
+            y + height - radius
+        );
+
+        ctx.lineTo(
+            x,
+            y + radius
+        );
+
+        ctx.quadraticCurveTo(
+            x,
+            y,
+            x + radius,
+            y
+        );
+
+        ctx.closePath();
+
+    }
+
+
+    /* ============================================================
+       32. DRAW EVERYTHING
+    ============================================================ */
+
+    function drawGame() {
+
+        drawBackground();
+
+        drawMapObjects();
+
+        drawMonsters();
+
+        drawLabels();
+
+        drawPlayer();
+
+    }
+
+
+    /* ============================================================
+       33. GAME LOOP
+    ============================================================ */
+
+    function gameLoop() {
+
+        if (!game.running) return;
+
+
+        updatePlayer();
+
+        drawGame();
+
+
+        requestAnimationFrame(gameLoop);
+
+    }
+
+
+    /* ============================================================
+       34. UPDATE HUD
+    ============================================================ */
+
+    function updateHUD() {
+
+        document.getElementById("hudNama")
+            .textContent =
+                game.playerName;
+
+
+        document.getElementById("hudLevel")
+            .textContent =
+                game.level;
+
+
+        document.getElementById("hudGold")
+            .textContent =
+                game.gold;
+
+    }
+
+
+    /* ============================================================
+       35. START GAME
+    ============================================================ */
+
+    document.getElementById("mulaiBtn")
+        .addEventListener("click", function() {
+
+            const input =
+                document.getElementById("namaInput");
+
+
+            const nama =
+                input.value.trim();
+
+
+            game.playerName =
+                nama || "Hero";
+
+
+            game.level = 1;
+
+            game.xp = 0;
+
+            game.gold = 0;
+
+            game.defeated = 0;
+
+            game.bossDefeated = false;
+
+            game.battle = false;
+
+
+            // Reset player
+
+            player.x = 70;
+
+            player.y = 380;
+
+
+            // Reset monsters
+
+            monsters.forEach(monster => {
+
+                monster.alive = true;
+
+                monster.hp = monster.maxHP;
+
+            });
+
+
+            // Reset player stats
+
+            playerBattle = {
+
+                hp: 100,
+
+                maxHP: 100,
+
+                mana: 50,
+
+                maxMana: 50,
+
+                potion: 3
+
+            };
+
+
+            updateHUD();
+
+
+            game.running = true;
+
+
+            tampilkanLayar(layarGame);
+
+
+            drawGame();
+
+            requestAnimationFrame(gameLoop);
+
+        });
+
+
+    /* ============================================================
+       36. ATTACK BUTTON
+    ============================================================ */
+
+    document.getElementById("attackBtn")
+        .addEventListener(
+            "click",
+            playerAttack
+        );
+
+
+    /* ============================================================
+       37. SKILL BUTTON
+    ============================================================ */
+
+    document.getElementById("skillBtn")
+        .addEventListener(
+            "click",
+            playerSkill
+        );
+
+
+    /* ============================================================
+       38. POTION BUTTON
+    ============================================================ */
+
+    document.getElementById("potionBtn")
+        .addEventListener(
+            "click",
+            usePotion
+        );
+
+
+    /* ============================================================
+       39. RUN BUTTON
+    ============================================================ */
+
+    document.getElementById("runBtn")
+        .addEventListener(
+            "click",
+            runBattle
+        );
+
+
+    /* ============================================================
+       40. FINISH GAME
+    ============================================================ */
+
+    function finishGame(win) {
+
+        game.running = false;
+
+        game.battle = false;
+
+
+        if (win) {
+
+            document.getElementById("resultIcon")
+                .textContent = "🏆";
+
+
+            document.getElementById("resultTitle")
+                .textContent =
+                    "Kamu Menang!";
+
+
+            document.getElementById("resultMessage")
+                .textContent =
+                    `Hebat, ${game.playerName}! Kamu berhasil mengalahkan Dragon Boss dan menjadi pahlawan Pixel Quest.`;
+
+        } else {
+
+            document.getElementById("resultIcon")
+                .textContent = "💀";
+
+
+            document.getElementById("resultTitle")
+                .textContent =
+                    "Petualangan Berakhir";
+
+
+            document.getElementById("resultMessage")
+                .textContent =
+                    `Kamu berhasil mengalahkan ${game.defeated} monster dan mengumpulkan ${game.gold} Gold.`;
+
+        }
+
+
+        document.getElementById("resultGold")
+            .textContent =
+                game.gold;
+
+
+        saveScore();
+
+
+        tampilkanLayar(layarHasil);
+
+    }
+
+
+    /* ============================================================
+       41. SAVE SCORE
+    ============================================================ */
+
+    function saveScore() {
+
+        const oldScore =
+            Number(
+                localStorage.getItem("pixelQuestGold")
+            ) || 0;
+
+
+        if (game.gold > oldScore) {
+
+            localStorage.setItem(
+                "pixelQuestGold",
+                game.gold
+            );
+
+        }
+
+    }
+
+
+    /* ============================================================
+       42. PLAY AGAIN
+    ============================================================ */
+
+    document.getElementById("mainLagiBtn")
+        .addEventListener("click", function() {
+
+            tampilkanLayar(layarMulai);
+
+        });
+
+
+    /* ============================================================
+       43. ENTER UNTUK MULAI
+    ============================================================ */
+
+    document.getElementById("namaInput")
+        .addEventListener("keydown", function(event) {
+
+            if (event.key === "Enter") {
+
+                document.getElementById("mulaiBtn")
+                    .click();
+
+            }
+
+        });
+
+
+    /* ============================================================
+       44. INITIAL DRAW
+    ============================================================ */
+
+    drawGame();
+
+</script>
+
+</body>
+</html>
