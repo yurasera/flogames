@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
 
@@ -7,8 +8,15 @@
 
     <title>Reaction Rush</title>
 
-    <style>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
 
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;700;800&display=swap"
+        rel="stylesheet">
+
+    <style>
         /* =========================
            BASIC
         ========================= */
@@ -16,13 +24,27 @@
         * {
             box-sizing: border-box;
             margin: 0;
-            padding: 0;
+        }
+
+        :root {
+            --bg: #10131a;
+            --panel: #191d27;
+            --panel-soft: #222733;
+            --accent: #ffd23f;
+            --accent-dark: #eabf20;
+            --text: #f5f3ff;
+            --text-soft: #aeb5c2;
+            --display: "Fredoka", sans-serif;
+            --body: "Nunito", sans-serif;
         }
 
         body {
-            font-family: Arial, Helvetica, sans-serif;
-            background: #10131a;
-            color: white;
+            font-family: var(--body);
+            background:
+                radial-gradient(circle at top,
+                    #252b38 0%,
+                    var(--bg) 55%);
+            color: var(--text);
 
             min-height: 100vh;
 
@@ -30,28 +52,13 @@
             justify-content: center;
             align-items: center;
 
-            padding: 20px;
+            padding: 12px;
         }
 
 
-        /* =========================
-           GAME CONTAINER
-        ========================= */
-
         .game {
-            width: 900px;
-            max-width: 100%;
-
-            background: #191d27;
-
-            border: 2px solid #303746;
-
-            border-radius: 24px;
-
-            padding: 24px;
-
-            box-shadow:
-                0 20px 60px rgba(0, 0, 0, 0.4);
+            width: 100%;
+            max-width: 520px;
         }
 
 
@@ -60,22 +67,27 @@
         ========================= */
 
         .header {
-            display: flex;
-
-            justify-content: space-between;
-            align-items: center;
-
-            margin-bottom: 20px;
+            background: var(--panel);
+            border: 2px solid rgba(255, 255, 255, 0.07);
+            border-radius: 18px;
+            padding: 18px;
+            margin-bottom: 10px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.35);
         }
 
         .title {
+            color: var(--accent);
+            font-family: var(--display);
             font-size: 32px;
-            font-weight: bold;
+            font-weight: 700;
+            text-align: center;
         }
 
         .subtitle {
-            color: #9ca3af;
-            margin-top: 5px;
+            color: var(--text-soft);
+            margin-top: 6px;
+            text-align: center;
+            line-height: 1.5;
         }
 
 
@@ -89,35 +101,33 @@
             grid-template-columns:
                 repeat(4, 1fr);
 
-            gap: 12px;
-
-            margin-bottom: 20px;
+            gap: 7px;
+            margin-bottom: 10px;
         }
 
         .stat {
-            background: #222733;
-
-            border-radius: 16px;
-
-            padding: 16px;
+            background: var(--panel);
+            border: 1px solid rgba(255, 255, 255, 0.07);
+            border-radius: 14px;
+            padding: 9px 5px;
 
             text-align: center;
         }
 
         .stat-label {
-            font-size: 12px;
-
-            color: #9ca3af;
+            color: var(--text-soft);
+            font-size: 9px;
 
             text-transform: uppercase;
 
-            margin-bottom: 5px;
+            margin-bottom: 2px;
         }
 
         .stat-value {
-            font-size: 28px;
-
-            font-weight: bold;
+            color: var(--text);
+            font-family: var(--display);
+            font-size: 17px;
+            font-weight: 700;
         }
 
 
@@ -129,20 +139,18 @@
             position: relative;
 
             width: 100%;
-            height: 500px;
+            height: min(500px, 118vw);
 
             background:
-                radial-gradient(
-                    circle at center,
-                    #252b38,
-                    #171b24
-                );
+                radial-gradient(circle at center,
+                    #30205a,
+                    #1b1035);
 
-            border-radius: 20px;
+            border-radius: 16px;
 
             overflow: hidden;
 
-            border: 2px solid #343b4a;
+            border: 2px solid rgba(255, 255, 255, 0.08);
 
             cursor: crosshair;
         }
@@ -218,15 +226,17 @@
         }
 
         #message h2 {
-            font-size: 42px;
+            color: var(--accent);
+            font-family: var(--display);
+            font-size: 36px;
 
             margin-bottom: 10px;
         }
 
         #message p {
-            color: #aeb5c2;
+            color: var(--text-soft);
 
-            font-size: 18px;
+            font-size: 15px;
         }
 
 
@@ -239,33 +249,29 @@
 
             justify-content: center;
 
-            margin-top: 20px;
+            margin-top: 10px;
         }
 
         button {
             border: none;
-
-            background: #4f7cff;
-
-            color: white;
-
-            padding: 14px 30px;
-
+            width: 100%;
+            min-height: 50px;
+            background: var(--accent);
+            color: #25183f;
+            padding: 13px 18px;
             border-radius: 12px;
-
-            font-size: 17px;
-
-            font-weight: bold;
-
+            font-family: var(--body);
+            font-size: 15px;
+            font-weight: 800;
             cursor: pointer;
-
-            transition: 0.2s;
+            box-shadow: 0 4px 0 var(--accent-dark);
+            transition: transform 0.15s, background 0.15s;
         }
 
         button:hover {
             transform: translateY(-2px);
 
-            background: #668dff;
+            background: #ffe071;
         }
 
         button:active {
@@ -282,7 +288,9 @@
 
             pointer-events: none;
 
-            font-size: 24px;
+            color: var(--accent);
+            font-family: var(--display);
+            font-size: 22px;
 
             font-weight: bold;
 
@@ -295,16 +303,14 @@
                 opacity: 1;
 
                 transform:
-                    translate(-50%, -50%)
-                    scale(1);
+                    translate(-50%, -50%) scale(1);
             }
 
             100% {
                 opacity: 0;
 
                 transform:
-                    translate(-50%, -130px)
-                    scale(1.4);
+                    translate(-50%, -130px) scale(1.4);
             }
         }
 
@@ -332,19 +338,15 @@
                 opacity: 1;
 
                 transform:
-                    translate(0, 0)
-                    scale(1);
+                    translate(0, 0) scale(1);
             }
 
             100% {
                 opacity: 0;
 
                 transform:
-                    translate(
-                        var(--x),
-                        var(--y)
-                    )
-                    scale(0);
+                    translate(var(--x),
+                        var(--y)) scale(0);
             }
         }
 
@@ -353,23 +355,17 @@
            RESPONSIVE
         ========================= */
 
-        @media (max-width: 700px) {
+        @media (min-width: 600px) {
 
-            .stats {
-                grid-template-columns:
-                    repeat(2, 1fr);
+            body {
+                padding: 20px;
             }
 
-            #gameArea {
-                height: 400px;
-            }
-
-            .title {
-                font-size: 24px;
+            .header {
+                padding: 24px;
             }
 
         }
-
     </style>
 </head>
 
@@ -414,9 +410,7 @@
                     Score
                 </div>
 
-                <div
-                    id="score"
-                    class="stat-value">
+                <div id="score" class="stat-value">
                     0
                 </div>
 
@@ -429,9 +423,7 @@
                     Time
                 </div>
 
-                <div
-                    id="time"
-                    class="stat-value">
+                <div id="time" class="stat-value">
                     30
                 </div>
 
@@ -444,9 +436,7 @@
                     Level
                 </div>
 
-                <div
-                    id="level"
-                    class="stat-value">
+                <div id="level" class="stat-value">
                     1
                 </div>
 
@@ -459,9 +449,7 @@
                     Best
                 </div>
 
-                <div
-                    id="best"
-                    class="stat-value">
+                <div id="best" class="stat-value">
                     0
                 </div>
 
@@ -800,10 +788,10 @@
 
             const randomColor =
                 colors[
-                    Math.floor(
-                        Math.random() *
-                        colors.length
-                    )
+                Math.floor(
+                    Math.random() *
+                    colors.length
+                )
                 ];
 
             target.style.background =
@@ -846,7 +834,7 @@
 
         target.addEventListener(
             "click",
-            function(event) {
+            function (event) {
 
                 if (!gameRunning) {
                     return;
@@ -940,7 +928,7 @@
 
         gameArea.addEventListener(
             "click",
-            function(event) {
+            function (event) {
 
                 if (!gameRunning) {
                     return;
@@ -1024,7 +1012,7 @@
 
 
             setTimeout(
-                function() {
+                function () {
 
                     text.remove();
 
@@ -1079,7 +1067,7 @@
 
 
             setTimeout(
-                function() {
+                function () {
 
                     text.remove();
 
@@ -1187,7 +1175,7 @@
                 */
 
                 setTimeout(
-                    function() {
+                    function () {
 
                         particle.remove();
 
@@ -1213,4 +1201,5 @@
     </script>
 
 </body>
+
 </html>
